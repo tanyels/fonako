@@ -56,10 +56,23 @@ CREATE TABLE fund_returns (
   UNIQUE(fund_code, period)
 );
 
+-- Inflation data (monthly CPI indices)
+CREATE TABLE inflation_data (
+  id BIGSERIAL PRIMARY KEY,
+  source TEXT NOT NULL,           -- 'tuik', 'enag', 'fed', 'konut'
+  year_month TEXT NOT NULL,       -- '2025-03'
+  index_value DECIMAL(12,4),     -- raw CPI index (null for ENAG)
+  monthly_change DECIMAL(8,4),   -- MoM % change
+  annual_change DECIMAL(8,4),    -- rolling 12m YoY %
+  fetched_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(source, year_month)
+);
+
 -- Indexes for performance
 CREATE INDEX idx_fund_prices_code_date ON fund_prices(fund_code, date);
 CREATE INDEX idx_exchange_rates_date ON exchange_rates(date);
 CREATE INDEX idx_fund_returns_period ON fund_returns(period);
+CREATE INDEX idx_inflation_data_source ON inflation_data(source, year_month);
 
 -- Row Level Security (optional, for public access)
 ALTER TABLE funds ENABLE ROW LEVEL SECURITY;
@@ -67,6 +80,7 @@ ALTER TABLE fund_prices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE exchange_rates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE fund_returns ENABLE ROW LEVEL SECURITY;
 ALTER TABLE live_rates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE inflation_data ENABLE ROW LEVEL SECURITY;
 
 -- Allow public read access
 CREATE POLICY "Public read access" ON funds FOR SELECT USING (true);
@@ -74,3 +88,4 @@ CREATE POLICY "Public read access" ON fund_prices FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON exchange_rates FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON fund_returns FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON live_rates FOR SELECT USING (true);
+CREATE POLICY "Public read access" ON inflation_data FOR SELECT USING (true);

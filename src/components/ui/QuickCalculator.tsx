@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FUNDS } from '@/lib/data/funds'
+import { FundSearch } from './FundSearch'
 import { calculateRealReturns, type RealReturns } from '@/lib/utils/calculations'
 
 export function QuickCalculator() {
@@ -37,18 +37,7 @@ export function QuickCalculator() {
         {/* Fund Selection */}
         <div>
           <label className="block text-sm font-medium text-slate-600 mb-1">Fon / Fund</label>
-          <select
-            value={selectedFund}
-            onChange={(e) => setSelectedFund(e.target.value)}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800 bg-white focus:ring-2 focus:ring-slate-400 focus:border-slate-400"
-          >
-            <option value="">Seçin...</option>
-            {FUNDS.map((fund) => (
-              <option key={fund.code} value={fund.code}>
-                {fund.name}
-              </option>
-            ))}
-          </select>
+          <FundSearch value={selectedFund} onChange={setSelectedFund} placeholder="Fon ara..." />
         </div>
 
         {/* Start Date */}

@@ -1,34 +1,34 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { supabase } from '@/lib/api/supabase'
+import { getFundReturns } from '@/lib/api/fundReturnsCache'
+import { useFundBatchLookup } from '@/lib/hooks/useFundLookup'
+import { PAGE_SIZE } from '@/lib/constants'
 
-interface FundGrade {
+type Grade = 'A' | 'B' | 'C' | 'D' | 'F'
+type PeriodKey = '1Y' | '2Y' | '5Y'
+
+interface FundGradeData {
   code: string
-  name: string
-  category: string
-  grade1Y: Grade
-  grade3Y: Grade
-  grade5Y: Grade
-  usdReturn1Y: number
-  usdReturn3Y: number
-  usdReturn5Y: number
+  usdReturn: number
+  grade: Grade
   trend: 'up' | 'down' | 'stable'
 }
 
-type Grade = 'A' | 'B' | 'C' | 'D' | 'F'
-
-const FUND_GRADES: FundGrade[] = [
-  { code: 'TYH', name: 'Yapı Kredi Altın Fonu', category: 'Altın', grade1Y: 'A', grade3Y: 'A', grade5Y: 'B', usdReturn1Y: 28, usdReturn3Y: 45, usdReturn5Y: 62, trend: 'up' },
-  { code: 'GAL', name: 'Garanti Altın Fonu', category: 'Altın', grade1Y: 'A', grade3Y: 'B', grade5Y: 'B', usdReturn1Y: 25, usdReturn3Y: 38, usdReturn5Y: 55, trend: 'stable' },
-  { code: 'MAC', name: 'Ak Portföy Amerika', category: 'Yabancı', grade1Y: 'B', grade3Y: 'A', grade5Y: 'A', usdReturn1Y: 18, usdReturn3Y: 52, usdReturn5Y: 85, trend: 'stable' },
-  { code: 'IPB', name: 'İş Portföy BIST Banka', category: 'Hisse', grade1Y: 'B', grade3Y: 'C', grade5Y: 'D', usdReturn1Y: 12, usdReturn3Y: -5, usdReturn5Y: -18, trend: 'up' },
-  { code: 'GAE', name: 'Garanti Euro Fonu', category: 'Döviz', grade1Y: 'C', grade3Y: 'C', grade5Y: 'C', usdReturn1Y: 5, usdReturn3Y: 8, usdReturn5Y: 12, trend: 'stable' },
-  { code: 'AFA', name: 'Ak Portföy BIST 30', category: 'Hisse', grade1Y: 'C', grade3Y: 'D', grade5Y: 'D', usdReturn1Y: -2, usdReturn3Y: -15, usdReturn5Y: -22, trend: 'up' },
-  { code: 'IST', name: 'İş Portföy Tahvil', category: 'Tahvil', grade1Y: 'D', grade3Y: 'F', grade5Y: 'F', usdReturn1Y: -18, usdReturn3Y: -42, usdReturn5Y: -55, trend: 'down' },
-  { code: 'AK1', name: 'Ak Para Piyasası', category: 'Para', grade1Y: 'F', grade3Y: 'F', grade5Y: 'F', usdReturn1Y: -25, usdReturn3Y: -52, usdReturn5Y: -68, trend: 'down' },
-  { code: 'YKP', name: 'YK Para Piyasası', category: 'Para', grade1Y: 'F', grade3Y: 'F', grade5Y: 'F', usdReturn1Y: -28, usdReturn3Y: -55, usdReturn5Y: -70, trend: 'down' },
-  { code: 'TTE', name: 'TEB Hisse Fonu', category: 'Hisse', grade1Y: 'C', grade3Y: 'D', grade5Y: 'D', usdReturn1Y: 0, usdReturn3Y: -12, usdReturn5Y: -20, trend: 'up' },
+const PERIOD_OPTIONS: { key: PeriodKey; label: string }[] = [
+  { key: '1Y', label: '1 Yıl' },
+  { key: '2Y', label: '2 Yıl' },
+  { key: '5Y', label: '5 Yıl' },
 ]
+
+function computeGrade(usdReturn: number): Grade {
+  if (usdReturn >= 20) return 'A'
+  if (usdReturn >= 10) return 'B'
+  if (usdReturn >= 0) return 'C'
+  if (usdReturn >= -15) return 'D'
+  return 'F'
+}
 
 const GRADE_CONFIG = {
   A: { color: 'bg-emerald-500', textColor: 'text-emerald-700', bgLight: 'bg-emerald-50', label: 'Mükemmel', description: 'USD bazında pozitif getiri, üst %10' },
@@ -39,22 +39,98 @@ const GRADE_CONFIG = {
 }
 
 export function FundReportCards() {
-  const [selectedPeriod, setSelectedPeriod] = useState<'1Y' | '3Y' | '5Y'>('1Y')
+  const [selectedPeriod, setSelectedPeriod] = useState<PeriodKey>('1Y')
   const [selectedFund, setSelectedFund] = useState<string | null>(null)
+  const [funds, setFunds] = useState<FundGradeData[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
+  const [detailReturns, setDetailReturns] = useState<Record<PeriodKey, { usd: number; sp500: number }>>({
+    '1Y': { usd: 0, sp500: 0 },
+    '2Y': { usd: 0, sp500: 0 },
+    '5Y': { usd: 0, sp500: 0 },
+  })
 
-  const getGrade = (fund: FundGrade): Grade => {
-    if (selectedPeriod === '1Y') return fund.grade1Y
-    if (selectedPeriod === '3Y') return fund.grade3Y
-    return fund.grade5Y
-  }
+  const codes = funds.map((f) => f.code)
+  const nameMap = useFundBatchLookup(codes)
 
-  const getReturn = (fund: FundGrade): number => {
-    if (selectedPeriod === '1Y') return fund.usdReturn1Y
-    if (selectedPeriod === '3Y') return fund.usdReturn3Y
-    return fund.usdReturn5Y
-  }
+  const loadData = useCallback(async () => {
+    setLoading(true)
+    setError(false)
+    setVisibleCount(PAGE_SIZE)
+    try {
+      const returns = await getFundReturns(selectedPeriod, 100)
 
-  const selectedFundData = selectedFund ? FUND_GRADES.find(f => f.code === selectedFund) : null
+      // Fetch trend comparison period
+      const trendPeriod = selectedPeriod === '1Y' ? '2Y' : '1Y'
+      const trendReturns = await getFundReturns(trendPeriod)
+      const trendMap = new Map<string, number>()
+      for (const r of trendReturns) {
+        trendMap.set(r.fund_code, r.usd_return ?? 0)
+      }
+
+      setFunds(returns.map((r) => {
+        const usdReturn = r.usd_return ?? 0
+        const grade = computeGrade(usdReturn)
+        const trendReturn = trendMap.get(r.fund_code)
+
+        let trend: 'up' | 'down' | 'stable' = 'stable'
+        if (trendReturn !== undefined) {
+          const trendGrade = computeGrade(trendReturn)
+          const gradeOrder = { A: 5, B: 4, C: 3, D: 2, F: 1 }
+          if (gradeOrder[grade] > gradeOrder[trendGrade]) trend = 'up'
+          else if (gradeOrder[grade] < gradeOrder[trendGrade]) trend = 'down'
+        }
+
+        return { code: r.fund_code, usdReturn, grade, trend }
+      }))
+    } catch {
+      setError(true)
+      setFunds([])
+    } finally {
+      setLoading(false)
+    }
+  }, [selectedPeriod])
+
+  useEffect(() => { loadData() }, [loadData])
+
+  // Load detail for selected fund
+  useEffect(() => {
+    if (!selectedFund) return
+    let cancelled = false
+
+    async function loadDetail() {
+      const { data } = await supabase
+        .from('fund_returns')
+        .select('period, usd_return, sp500_return')
+        .eq('fund_code', selectedFund)
+        .in('period', ['1Y', '2Y', '5Y'])
+
+      if (cancelled || !data) return
+      const result: Record<PeriodKey, { usd: number; sp500: number }> = {
+        '1Y': { usd: 0, sp500: 0 },
+        '2Y': { usd: 0, sp500: 0 },
+        '5Y': { usd: 0, sp500: 0 },
+      }
+      for (const r of data) {
+        if (r.period in result) {
+          result[r.period as PeriodKey] = {
+            usd: r.usd_return ?? 0,
+            sp500: r.sp500_return ?? 0,
+          }
+        }
+      }
+      setDetailReturns(result)
+    }
+
+    loadDetail()
+    return () => { cancelled = true }
+  }, [selectedFund])
+
+  const selectedFundData = selectedFund ? funds.find((f) => f.code === selectedFund) : null
+  const selectedInfo = selectedFund ? nameMap.get(selectedFund) : null
+  const visibleFunds = funds.slice(0, visibleCount)
+  const hasMore = visibleCount < funds.length
 
   return (
     <div className="space-y-6">
@@ -64,9 +140,7 @@ export function FundReportCards() {
         <div className="flex flex-wrap gap-4">
           {Object.entries(GRADE_CONFIG).map(([grade, config]) => (
             <div key={grade} className="flex items-center gap-2">
-              <span className={`w-8 h-8 ${config.color} rounded-lg flex items-center justify-center text-white font-bold`}>
-                {grade}
-              </span>
+              <span className={`w-8 h-8 ${config.color} rounded-lg flex items-center justify-center text-white font-bold`}>{grade}</span>
               <div>
                 <p className="text-sm font-medium text-slate-700">{config.label}</p>
                 <p className="text-xs text-slate-500">{config.description}</p>
@@ -78,102 +152,130 @@ export function FundReportCards() {
 
       {/* Period Selector */}
       <div className="flex gap-2">
-        {(['1Y', '3Y', '5Y'] as const).map((period) => (
+        {PERIOD_OPTIONS.map((p) => (
           <button
-            key={period}
-            onClick={() => setSelectedPeriod(period)}
+            key={p.key}
+            onClick={() => setSelectedPeriod(p.key)}
             className={`px-4 py-2 rounded-lg font-medium transition ${
-              selectedPeriod === period
-                ? 'bg-slate-800 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              selectedPeriod === p.key ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
+            aria-label={`${p.label} dönemini seç`}
+            aria-pressed={selectedPeriod === p.key}
           >
-            {period}
+            {p.label}
           </button>
         ))}
       </div>
 
       {/* Report Cards Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {FUND_GRADES.map((fund) => {
-          const grade = getGrade(fund)
-          const config = GRADE_CONFIG[grade]
-          const usdReturn = getReturn(fund)
-
-          return (
-            <div
-              key={fund.code}
-              onClick={() => setSelectedFund(fund.code)}
-              className={`${config.bgLight} border-2 ${selectedFund === fund.code ? 'border-slate-400' : 'border-transparent'} rounded-xl p-4 cursor-pointer hover:shadow-md transition`}
-            >
-              {/* Grade Badge */}
-              <div className="flex justify-between items-start mb-3">
-                <span className={`w-12 h-12 ${config.color} rounded-xl flex items-center justify-center text-white text-2xl font-bold shadow-lg`}>
-                  {grade}
-                </span>
-                <span className="text-xs text-slate-500">
-                  {fund.trend === 'up' ? '📈' : fund.trend === 'down' ? '📉' : '➡️'}
-                </span>
+      {loading ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div key={i} className="animate-pulse rounded-xl p-4 bg-slate-50">
+              <div className="flex justify-between mb-3">
+                <div className="w-12 h-12 bg-slate-200 rounded-xl" />
+                <div className="w-4 h-4 bg-slate-200 rounded" />
               </div>
-
-              {/* Fund Info */}
-              <h4 className="font-semibold text-slate-800 text-sm mb-1 line-clamp-2">{fund.name}</h4>
-              <p className="text-xs text-slate-500 mb-2">{fund.code} · {fund.category}</p>
-
-              {/* USD Return */}
-              <p className={`text-lg font-bold ${usdReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                {usdReturn >= 0 ? '+' : ''}{usdReturn}%
-                <span className="text-xs font-normal text-slate-500 ml-1">USD</span>
-              </p>
+              <div className="h-4 w-24 bg-slate-200 rounded mb-1" />
+              <div className="h-3 w-16 bg-slate-200 rounded mb-2" />
+              <div className="h-6 w-20 bg-slate-200 rounded" />
             </div>
-          )
-        })}
-      </div>
-
-      {/* Selected Fund Detail */}
-      {selectedFundData && (
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h3 className="text-xl font-bold text-slate-800">{selectedFundData.name}</h3>
-              <p className="text-slate-500">{selectedFundData.code} · {selectedFundData.category}</p>
-            </div>
-            <button
-              onClick={() => setSelectedFund(null)}
-              className="text-slate-400 hover:text-slate-600"
-            >
-              ✕
-            </button>
-          </div>
-
-          {/* Grade History */}
-          <h4 className="font-semibold text-slate-700 mb-3">Not Geçmişi / Grade History</h4>
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            {(['1Y', '3Y', '5Y'] as const).map((period) => {
-              const grade = period === '1Y' ? selectedFundData.grade1Y : period === '3Y' ? selectedFundData.grade3Y : selectedFundData.grade5Y
-              const usdReturn = period === '1Y' ? selectedFundData.usdReturn1Y : period === '3Y' ? selectedFundData.usdReturn3Y : selectedFundData.usdReturn5Y
-              const config = GRADE_CONFIG[grade]
-
+          ))}
+        </div>
+      ) : error ? (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
+          <p className="text-red-700 mb-3">Veri yüklenirken hata oluştu.</p>
+          <button onClick={loadData} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium" aria-label="Veriyi yeniden yükle">
+            Tekrar Dene
+          </button>
+        </div>
+      ) : funds.length === 0 ? (
+        <div className="text-center text-slate-500 py-8">Bu dönem için veri bulunamadı.</div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {visibleFunds.map((fund) => {
+              const config = GRADE_CONFIG[fund.grade]
+              const info = nameMap.get(fund.code)
               return (
-                <div key={period} className={`${config.bgLight} rounded-lg p-4 text-center`}>
-                  <p className="text-sm text-slate-600 mb-2">{period}</p>
-                  <span className={`inline-block w-10 h-10 ${config.color} rounded-lg text-white text-xl font-bold leading-10`}>
-                    {grade}
-                  </span>
-                  <p className={`text-sm font-semibold mt-2 ${usdReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                    {usdReturn >= 0 ? '+' : ''}{usdReturn}% USD
+                <div
+                  key={fund.code}
+                  onClick={() => setSelectedFund(fund.code)}
+                  className={`${config.bgLight} border-2 ${selectedFund === fund.code ? 'border-slate-400' : 'border-transparent'} rounded-xl p-4 cursor-pointer hover:shadow-md transition`}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`${info?.name || fund.code} fon detaylarını göster`}
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <span className={`w-12 h-12 ${config.color} rounded-xl flex items-center justify-center text-white text-2xl font-bold shadow-lg`}>{fund.grade}</span>
+                    <span className="text-xs text-slate-500">
+                      {fund.trend === 'up' ? '📈' : fund.trend === 'down' ? '📉' : '➡️'}
+                    </span>
+                  </div>
+                  <h4 className="font-semibold text-slate-800 text-sm mb-1 line-clamp-2">{info?.name || fund.code}</h4>
+                  <p className="text-xs text-slate-500 mb-2">{fund.code} · {info?.category || '-'}</p>
+                  <p className={`text-lg font-bold ${fund.usdReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                    {fund.usdReturn >= 0 ? '+' : ''}{fund.usdReturn.toFixed(1)}%
+                    <span className="text-xs font-normal text-slate-500 ml-1">USD</span>
                   </p>
                 </div>
               )
             })}
           </div>
 
-          {/* Verdict */}
-          <div className={`p-4 rounded-lg ${GRADE_CONFIG[selectedFundData.grade1Y].bgLight}`}>
-            <p className={`font-semibold ${GRADE_CONFIG[selectedFundData.grade1Y].textColor}`}>
-              {selectedFundData.grade1Y === 'A' || selectedFundData.grade1Y === 'B'
+          {hasMore && (
+            <div className="text-center">
+              <button
+                onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                className="px-6 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition text-sm font-medium"
+                aria-label="Daha fazla fon göster"
+              >
+                Daha fazla göster ({funds.length - visibleCount} kaldı)
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Selected Fund Detail */}
+      {selectedFundData && (
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h3 className="text-xl font-bold text-slate-800">{selectedInfo?.name || selectedFundData.code}</h3>
+              <p className="text-slate-500">{selectedFundData.code} · {selectedInfo?.category || '-'}</p>
+            </div>
+            <button onClick={() => setSelectedFund(null)} className="text-slate-400 hover:text-slate-600" aria-label="Detayları kapat">✕</button>
+          </div>
+
+          <h4 className="font-semibold text-slate-700 mb-3">Not Geçmişi / Grade History</h4>
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            {PERIOD_OPTIONS.map((p) => {
+              const { usd: usdReturn, sp500: sp500Return } = detailReturns[p.key]
+              const grade = computeGrade(usdReturn)
+              const config = GRADE_CONFIG[grade]
+              return (
+                <div key={p.key} className={`${config.bgLight} rounded-lg p-4 text-center`}>
+                  <p className="text-sm text-slate-600 mb-2">{p.label}</p>
+                  <span className={`inline-block w-10 h-10 ${config.color} rounded-lg text-white text-xl font-bold leading-10`}>{grade}</span>
+                  <p className={`text-sm font-semibold mt-2 ${usdReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                    {usdReturn >= 0 ? '+' : ''}{usdReturn.toFixed(1)}% USD
+                  </p>
+                  {sp500Return !== 0 && (
+                    <p className={`text-xs mt-1 ${sp500Return >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                      vs S&P 500: {sp500Return >= 0 ? '+' : ''}{sp500Return.toFixed(1)}%
+                    </p>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
+          <div className={`p-4 rounded-lg ${GRADE_CONFIG[selectedFundData.grade].bgLight}`}>
+            <p className={`font-semibold ${GRADE_CONFIG[selectedFundData.grade].textColor}`}>
+              {selectedFundData.grade === 'A' || selectedFundData.grade === 'B'
                 ? '✓ Bu fon USD bazında değer koruyor'
-                : selectedFundData.grade1Y === 'C'
+                : selectedFundData.grade === 'C'
                 ? '⚠️ Bu fon ortalama performans gösteriyor'
                 : '✗ Bu fon USD bazında değer kaybettiriyor'}
             </p>
@@ -182,17 +284,19 @@ export function FundReportCards() {
       )}
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        {Object.entries(GRADE_CONFIG).map(([grade, config]) => {
-          const count = FUND_GRADES.filter(f => getGrade(f) === grade).length
-          return (
-            <div key={grade} className={`${config.bgLight} rounded-lg p-4 text-center`}>
-              <span className={`text-3xl font-bold ${config.textColor}`}>{count}</span>
-              <p className="text-sm text-slate-600">Fon {grade} notu aldı</p>
-            </div>
-          )
-        })}
-      </div>
+      {!loading && funds.length > 0 && (
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {Object.entries(GRADE_CONFIG).map(([grade, config]) => {
+            const count = funds.filter((f) => f.grade === grade).length
+            return (
+              <div key={grade} className={`${config.bgLight} rounded-lg p-4 text-center`}>
+                <span className={`text-3xl font-bold ${config.textColor}`}>{count}</span>
+                <p className="text-sm text-slate-600">Fon {grade} notu aldı</p>
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

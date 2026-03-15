@@ -2,10 +2,12 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 export const metadata: Metadata = {
   title: 'Göstergeç - Gerçek Getiri Hesaplayıcı',
   description: 'Türk fonlarının USD, EUR ve altın bazında gerçek performansını görün. See real returns of Turkish funds in USD, EUR, and gold.',
+  viewport: 'width=device-width, initial-scale=1',
 }
 
 export default function RootLayout({
@@ -18,7 +20,9 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-1">
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </main>
         <Footer />
       </body>

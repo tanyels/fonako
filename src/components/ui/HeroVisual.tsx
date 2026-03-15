@@ -2,13 +2,19 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { IllusionBarChart } from './IllusionBarChart'
-import { FundMeltCounter } from './FundMeltCounter'
-import { FUNDS } from '@/lib/data/funds'
+import { TopFundsTable } from './TopFundsTable'
+import { FUND_CATEGORIES } from '@/lib/data/fund-types'
+import { useFundLookup } from '@/lib/hooks/useFundLookup'
+import { FundSearch } from './FundSearch'
 import { calculateRealReturns, type RealReturns } from '@/lib/utils/calculations'
+import { FALLBACK_TR_INFLATION, FALLBACK_US_INFLATION } from '@/lib/constants'
+import { extractTags } from '@/lib/utils/fundTags'
 
 const DEFAULT_AMOUNT = 10000
+const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000
+const SAMPLE_SIZE = 15
 
-// Candidate funds for random selection
+// Candidate funds for random selection (initial load)
 const CANDIDATE_CODES = ['IST', 'AK1', 'YKP', 'IPB', 'TTE', 'AFA']
 
 function shuffle<T>(arr: T[]): T[] {
@@ -20,47 +26,114 @@ function shuffle<T>(arr: T[]): T[] {
   return a
 }
 
+/**
+ * Biggest illusion = max(tryReturn - usdReturn) where tryReturn > 0
+ * TL'de kazandırıyor gibi gözüküp USD'de en çok kaybettiren fon
+ */
+async function findBiggestIllusion(
+  candidates: string[],
+  amount: number
+): Promise<{ code: string; data: RealReturns } | null> {
+  const startDate = new Date(Date.now() - ONE_YEAR_MS).toISOString().split('T')[0]
+  const sample = shuffle(candidates).slice(0, SAMPLE_SIZE)
+
+  let best: { code: string; data: RealReturns; score: number } | null = null
+
+  const results = await Promise.allSettled(
+    sample.map(async (code) => {
+      const data = await calculateRealReturns({ fundCode: code, startDate, amountTry: amount })
+      return { code, data }
+    })
+  )
+
+  for (const result of results) {
+    if (result.status !== 'fulfilled') continue
+    const { code, data } = result.value
+    // Illusion score: TL looks positive, USD is negative — bigger gap = bigger illusion
+    if (data.tryReturn > 0) {
+      const score = data.tryReturn - data.usdReturn
+      if (!best || score > best.score) {
+        best = { code, data, score }
+      }
+    }
+  }
+
+  return best ? { code: best.code, data: best.data } : null
+}
+
 export function HeroVisual() {
   const [selectedFund, setSelectedFund] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [amount, setAmount] = useState(DEFAULT_AMOUNT)
   const [results, setResults] = useState<RealReturns | null>(null)
   const [loading, setLoading] = useState(false)
   const initialized = useRef(false)
+  const requestId = useRef(0)
 
-  const fund = FUNDS.find((f) => f.code === selectedFund)
+  const fund = useFundLookup(selectedFund || undefined)
 
-  // Pick a random fund that has TL+ and USD- on first load
+  // On initial load: find biggest illusion from default candidates
   useEffect(() => {
     if (initialized.current) return
     initialized.current = true
 
-    async function findIdealFund() {
-      const shuffled = shuffle(CANDIDATE_CODES)
-      for (const code of shuffled) {
-        try {
-          const data = await calculateRealReturns({
-            fundCode: code,
-            startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            amountTry: DEFAULT_AMOUNT,
-          })
-          if (data.tryReturn > 0 && data.usdReturn < 0) {
-            setSelectedFund(code)
-            setResults(data)
-            return
-          }
-        } catch {
-          continue
-        }
-      }
-      // Fallback: just use the first one even if it doesn't match
-      const fallback = shuffled[0]
-      setSelectedFund(fallback)
-      fetchResults(fallback, DEFAULT_AMOUNT)
-    }
-
     setLoading(true)
-    findIdealFund().finally(() => setLoading(false))
+    findBiggestIllusion(CANDIDATE_CODES, DEFAULT_AMOUNT)
+      .then((result) => {
+        if (result) {
+          setSelectedFund(result.code)
+          setResults(result.data)
+        } else {
+          // Fallback
+          setSelectedFund(CANDIDATE_CODES[0])
+          fetchResults(CANDIDATE_CODES[0], DEFAULT_AMOUNT)
+        }
+      })
+      .finally(() => setLoading(false))
   }, [])
+
+  // When category changes: find biggest illusion in that category
+  useEffect(() => {
+    if (!initialized.current) return
+
+    const id = ++requestId.current
+    setLoading(true)
+    setResults(null)
+
+    async function run() {
+      try {
+        let candidates = CANDIDATE_CODES
+        if (selectedCategory !== 'all') {
+          const r = await fetch(`/api/funds?category=${encodeURIComponent(selectedCategory)}&limit=200`)
+          const funds: { code: string }[] = await r.json()
+          candidates = funds.map((f) => f.code)
+          if (candidates.length === 0 || id !== requestId.current) return
+        }
+
+        const result = await findBiggestIllusion(candidates, amount)
+        if (id !== requestId.current) return
+
+        if (result) {
+          setSelectedFund(result.code)
+          setResults(result.data)
+        } else {
+          const fallback = candidates[0]
+          setSelectedFund(fallback)
+          const data = await calculateRealReturns({
+            fundCode: fallback,
+            startDate: new Date(Date.now() - ONE_YEAR_MS).toISOString().split('T')[0],
+            amountTry: amount,
+          })
+          if (id === requestId.current) setResults(data)
+        }
+      } catch {
+        // ignore
+      } finally {
+        if (id === requestId.current) setLoading(false)
+      }
+    }
+    run()
+  }, [selectedCategory]) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function fetchResults(code: string, amt: number) {
     if (!code) {
@@ -88,88 +161,117 @@ export function HeroVisual() {
     fetchResults(code, amount)
   }
 
-  function handleAmountChange(val: number) {
-    setAmount(val)
-    if (selectedFund) fetchResults(selectedFund, val)
-  }
-
   // Placeholder defaults based on ~2024 rates
   const tlReturn = results?.tryReturn ?? 67
+  const tlRealReturn = results?.tryRealReturn ?? 15.7
   const usdReturn = results?.usdReturn ?? -8
+  const usdRealReturn = results?.usdRealReturn ?? -10.5
   const goldReturn = results?.goldReturn ?? -18
-  const endTL = results?.endValueTry ?? Math.round(amount * 1.67)
-  const startUSD = results?.startValueUsd ?? amount / 32
-  const endUSD = results?.endValueUsd ?? (amount * 1.67) / 36
-  const startGold = results?.startValueGold ?? amount / 2500
-  const endGold = results?.endValueGold ?? (amount * 1.67) / 3200
+  const goldRealReturn = results?.goldRealReturn ?? -43.3
+  const trInflation = results?.trInflation ?? FALLBACK_TR_INFLATION
+  const usInflation = results?.usInflation ?? FALLBACK_US_INFLATION
 
   return (
     <section className="w-full py-8">
-      <div className="text-center mb-8">
+      {/* Title */}
+      <div className="text-center mb-6">
         <h1 className="text-4xl font-bold text-slate-800 mb-3">
           Fonunuz Gerçekten Kazandırıyor mu?
         </h1>
-        <p className="text-lg text-slate-500 max-w-2xl mx-auto mb-6">
+        <p className="text-lg text-slate-500 max-w-2xl mx-auto">
           TL bazlı getiriler yanıltıcı olabilir. Bir fon seçin, gerçek performansı görün.
         </p>
-
-        {/* Fund selector */}
-        <div className="flex justify-center">
-          <select
-            value={selectedFund}
-            onChange={(e) => handleFundChange(e.target.value)}
-            className="border border-slate-300 rounded-lg px-4 py-2.5 text-slate-700 bg-white font-medium focus:ring-2 focus:ring-slate-400 focus:border-slate-400 min-w-[300px] text-base"
-          >
-            <option value="">Fon seçin...</option>
-            {FUNDS.map((f) => (
-              <option key={f.code} value={f.code}>
-                {f.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {fund && (
-          <p className="text-sm text-slate-400 mt-2">
-            {fund.category} · {fund.manager} · Son 1 yıl
-          </p>
-        )}
       </div>
 
-      {loading && (
-        <div className="text-center py-12">
-          <p className="text-slate-400 animate-pulse">Hesaplanıyor...</p>
-        </div>
-      )}
+      {/* Category filters */}
+      <div className="flex flex-wrap justify-center gap-2 mb-6">
+        <button
+          onClick={() => setSelectedCategory('all')}
+          className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${
+            selectedCategory === 'all'
+              ? 'bg-slate-800 text-white'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+          }`}
+        >
+          Tümü
+        </button>
+        {FUND_CATEGORIES.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${
+              selectedCategory === cat
+                ? 'bg-slate-800 text-white'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
 
-      {!loading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-            <IllusionBarChart
-              tlReturn={tlReturn}
-              usdReturn={usdReturn}
-              fundName={fund?.name}
+      {/* Two column layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {/* LEFT: Search & Analysis (2/3 width) */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Fund selector */}
+          <div>
+            <FundSearch
+              value={selectedFund}
+              onChange={handleFundChange}
+              categoryFilter={selectedCategory === 'all' ? undefined : selectedCategory}
             />
+            {fund && (
+              <div className="mt-2 text-center">
+                <div className="flex flex-wrap justify-center gap-1.5 mb-1">
+                  {extractTags(fund.name).map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2 py-0.5 text-xs font-medium rounded-full bg-slate-100 text-slate-600 border border-slate-200"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-sm text-slate-400">
+                  {fund.manager} · Son 1 yıl
+                </p>
+              </div>
+            )}
           </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-            <FundMeltCounter
-              startTL={amount}
-              endTL={Math.round(endTL)}
-              tlReturn={tlReturn}
-              startUSD={startUSD}
-              endUSD={endUSD}
-              usdReturn={usdReturn}
-              startGold={startGold}
-              endGold={endGold}
-              goldReturn={goldReturn}
-              selectedFund={selectedFund}
-              fundName={fund?.name}
-              onFundChange={handleFundChange}
-              onAmountChange={handleAmountChange}
-            />
-          </div>
+
+          {loading && (
+            <div className="text-center py-12">
+              <p className="text-slate-400 animate-pulse">Hesaplanıyor...</p>
+            </div>
+          )}
+
+          {!loading && (
+            <div>
+              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                <IllusionBarChart
+                  tlReturn={tlReturn}
+                  tlRealReturn={tlRealReturn}
+                  usdReturn={usdReturn}
+                  usdRealReturn={usdRealReturn}
+                  goldReturn={goldReturn}
+                  goldRealReturn={goldRealReturn}
+                  fundName={fund?.name}
+                  trInflation={trInflation}
+                  usInflation={usInflation}
+                />
+              </div>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* RIGHT: Top Funds Leaderboard (1/3 width) */}
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <TopFundsTable />
+        </div>
+
+      </div>
     </section>
   )
 }

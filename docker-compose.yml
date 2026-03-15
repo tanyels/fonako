@@ -1,0 +1,11 @@
+services:
+  gostergec:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: "https://lenjxstmgwcqmbpjjfoa.supabase.co"
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxlbmp4c3RtZ3djcW1icGpqZm9hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxNDEwODgsImV4cCI6MjA4NTcxNzA4OH0.Rulyt5QNqqUzBT6sez8p9ctRtwqdSNUBwfXJDHR4MFs"
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: unless-stopped
+    mem_limit: 512m

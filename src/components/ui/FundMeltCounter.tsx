@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { FUNDS } from '@/lib/data/funds'
+import { FundSearch } from './FundSearch'
 
 function fmtTL(v: number) {
   return v.toLocaleString('tr-TR', { maximumFractionDigits: 0 }) + ' ₺'
@@ -84,16 +84,13 @@ export function FundMeltCounter({
       {/* Inline sentence: "Tam 1 yıl önce [FON] fonuna [10.000] ₺ yatırdınız." */}
       <div className="flex items-baseline gap-1.5 mb-4 flex-wrap text-sm text-slate-600 font-medium">
         <span>Tam 1 yıl önce</span>
-        <select
-          value={selectedFund}
-          onChange={(e) => onFundChange?.(e.target.value)}
-          className="border border-slate-300 rounded px-2 py-0.5 text-sm font-bold text-slate-800 bg-white focus:ring-2 focus:ring-slate-400 focus:border-slate-400"
-        >
-          <option value="">Fon seçin</option>
-          {FUNDS.map((f) => (
-            <option key={f.code} value={f.code}>{f.name}</option>
-          ))}
-        </select>
+        <div className="inline-block min-w-[200px]">
+          <FundSearch
+            value={selectedFund}
+            onChange={(code) => onFundChange?.(code)}
+            placeholder="Fon seçin..."
+          />
+        </div>
         <span>fonuna</span>
         <input
           type="number"
@@ -166,4 +163,3 @@ export function FundMeltCounter({
     </div>
   )
 }
-

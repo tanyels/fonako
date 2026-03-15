@@ -4,18 +4,33 @@ import { useState, useEffect, useRef } from 'react'
 
 interface Props {
   tlReturn: number
+  tlRealReturn: number
   usdReturn: number
+  usdRealReturn: number
+  goldReturn: number
+  goldRealReturn: number
   fundName?: string
+  trInflation: number
+  usInflation: number
 }
 
-export function IllusionBarChart({ tlReturn, usdReturn, fundName }: Props) {
+export function IllusionBarChart({
+  tlReturn,
+  tlRealReturn,
+  usdReturn,
+  usdRealReturn,
+  goldReturn,
+  goldRealReturn,
+  fundName,
+  trInflation,
+  usInflation,
+}: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -25,105 +40,87 @@ export function IllusionBarChart({ tlReturn, usdReturn, fundName }: Props) {
       },
       { threshold: 0.3 }
     )
-
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
 
-  // Reset animation when data changes
   useEffect(() => {
     setIsVisible(false)
     const timer = setTimeout(() => setIsVisible(true), 50)
     return () => clearTimeout(timer)
-  }, [tlReturn, usdReturn])
+  }, [tlReturn, usdReturn, goldReturn])
 
-  const isTLPositive = tlReturn >= 0
-  const isUSDPositive = usdReturn >= 0
-
-  // Bar heights as percentage of the half (max bar = 90% of half)
-  const maxAbs = Math.max(Math.abs(tlReturn), Math.abs(usdReturn), 1)
-  const tlBarPct = Math.max((Math.abs(tlReturn) / maxAbs) * 90, 4)
-  const usdBarPct = Math.max((Math.abs(usdReturn) / maxAbs) * 90, 4)
-
-  const formatReturn = (val: number) =>
-    `${val >= 0 ? '+' : ''}%${val.toFixed(1)}`
-
-  const subtitle = fundName
-    ? `${fundName} — Son 1 Yıl`
-    : 'Bir fon seçerek gerçek getiriyi görün'
-
-  const insight = isUSDPositive
-    ? 'Bu fon USD bazında da kazandırmış.'
-    : 'TL getirisi yanıltıcı. Gerçek getiri USD bazında negatif.'
+  const realValues = [tlRealReturn, usdRealReturn, goldRealReturn]
+  const realMax = Math.max(...realValues.map(Math.abs), 1)
+  const fmt = (val: number) => `${val >= 0 ? '+' : ''}%${val.toFixed(1)}`
 
   return (
     <div ref={containerRef}>
-      <h3 className="text-lg font-bold text-slate-800 mb-1">Yanılsama vs Gerçek</h3>
-      <p className="text-xs text-slate-500 mb-6">{subtitle}</p>
-
-      <div className="flex justify-center gap-14">
-        {/* TL Bar */}
-        <BarColumn
-          value={tlReturn}
-          barPct={tlBarPct}
-          positive={isTLPositive}
-          formatReturn={formatReturn}
-          isVisible={isVisible}
-          animDelay={0}
-          labelDelay={0.9}
-          label="TL Getiri"
-          sublabel="Nominal"
-        />
-
-        {/* USD Bar */}
-        <BarColumn
-          value={usdReturn}
-          barPct={usdBarPct}
-          positive={isUSDPositive}
-          formatReturn={formatReturn}
-          isVisible={isVisible}
-          animDelay={0.3}
-          labelDelay={1.2}
-          label="USD Getiri"
-          sublabel="Gerçek"
-        />
+      {/* Headline: nominal TL return */}
+      <div className="text-center mb-5">
+        <p className="text-sm text-slate-500 mb-1">
+          {fundName ? `${fundName}` : 'Bir fon seçin'}
+        </p>
+        <p className="text-slate-700">
+          Fonunuz TL olarak <span className="font-bold text-emerald-600 text-lg">%{tlReturn.toFixed(1)}</span> getirdi diye düşünebilirsiniz.
+        </p>
+        <p className="text-slate-700 mt-1">
+          Ama aslında <span className="font-semibold">gerçekten kazandınız mı?</span>
+        </p>
       </div>
 
-      {/* Insight */}
-      <p className="text-center text-sm text-slate-500 mt-4 italic">
-        {insight}
-      </p>
+      <div className="border-t border-dashed border-slate-200 mb-4" />
+
+      {/* Real returns */}
+      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Reel Getiri</p>
+      <p className="text-[10px] text-slate-400 mb-3">TL → TÜFE %{trInflation.toFixed(0)} · USD → CPI %{usInflation.toFixed(0)}</p>
+
+      <div className="flex justify-center gap-6 sm:gap-10">
+        <BarColumn value={tlRealReturn} maxAbs={realMax} format={fmt} isVisible={isVisible} delay={0} label="TL Reel" subtitle="(TÜİK enflasyonuna göre)" color="emerald" />
+        <BarColumn value={usdRealReturn} maxAbs={realMax} format={fmt} isVisible={isVisible} delay={0.2} label="USD Reel" subtitle="(ABD enflasyonuna göre)" color="blue" />
+        <BarColumn value={goldRealReturn} maxAbs={realMax} format={fmt} isVisible={isVisible} delay={0.4} label="Altın Reel" subtitle="(TÜİK enflasyonuna göre)" color="amber" />
+      </div>
     </div>
   )
 }
 
 function BarColumn({
   value,
-  barPct,
-  positive,
-  formatReturn,
+  maxAbs,
+  format,
   isVisible,
-  animDelay,
-  labelDelay,
+  delay,
   label,
-  sublabel,
+  subtitle,
+  color,
 }: {
   value: number
-  barPct: number
-  positive: boolean
-  formatReturn: (v: number) => string
+  maxAbs: number
+  format: (v: number) => string
   isVisible: boolean
-  animDelay: number
-  labelDelay: number
+  delay: number
   label: string
-  sublabel: string
+  subtitle?: string
+  color: 'emerald' | 'blue' | 'amber'
 }) {
+  const positive = value >= 0
+  const barPct = Math.max((Math.abs(value) / maxAbs) * 85, 4)
+  const labelDelay = delay + 0.5
+
+  const gradients = {
+    emerald: { pos: 'from-emerald-600 to-emerald-400', neg: 'from-red-500 to-red-600' },
+    blue: { pos: 'from-blue-600 to-blue-400', neg: 'from-red-500 to-red-600' },
+    amber: { pos: 'from-amber-600 to-amber-400', neg: 'from-red-500 to-red-600' },
+  }
+
+  const grad = positive ? gradients[color].pos : gradients[color].neg
+  const textColor = positive ? 'text-emerald-600' : 'text-red-600'
+
   return (
-    <div className="flex flex-col items-center" style={{ width: 80 }}>
-      {/* Percentage label — above bar if positive */}
+    <div className="flex flex-col items-center" style={{ width: 75 }}>
       {positive && (
         <div
-          className="mb-1 h-8 flex items-end transition-all"
+          className="mb-1 h-6 flex items-end transition-all"
           style={{
             opacity: isVisible ? 1 : 0,
             transform: isVisible ? 'translateY(0)' : 'translateY(8px)',
@@ -131,56 +128,46 @@ function BarColumn({
             transitionDuration: '0.4s',
           }}
         >
-          <span className="text-xl font-bold text-emerald-600">
-            {formatReturn(value)}
-          </span>
+          <span className={`text-sm font-bold ${textColor}`}>{format(value)}</span>
         </div>
       )}
-      {/* Spacer if negative (keep alignment) */}
-      {!positive && <div className="h-8" />}
+      {!positive && <div className="h-6" />}
 
-      {/* Chart area — fixed height, split into top half + bottom half */}
-      <div className="relative w-full" style={{ height: 160 }}>
-        {/* Zero line */}
-        <div className="absolute left-0 right-0 top-1/2 -translate-y-px border-t-2 border-dashed border-slate-300" />
+      <div className="relative w-full" style={{ height: 100 }}>
+        <div className="absolute left-0 right-0 top-1/2 -translate-y-px border-t border-dashed border-slate-300" />
 
-        {/* Top half — positive bars grow from bottom up */}
         <div className="absolute top-0 left-0 right-0 flex items-end justify-center" style={{ height: '50%' }}>
           {positive && (
             <div
-              className={`w-full rounded-t-lg shadow-lg ${
-                positive ? 'bg-gradient-to-t from-emerald-600 to-emerald-400' : ''
-              }`}
+              className={`w-full rounded-t-md shadow bg-gradient-to-t ${grad}`}
               style={{
                 height: `${barPct}%`,
                 transformOrigin: 'bottom',
                 transform: isVisible ? 'scaleY(1)' : 'scaleY(0)',
-                transition: `transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${animDelay}s`,
+                transition: `transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`,
               }}
             />
           )}
         </div>
 
-        {/* Bottom half — negative bars grow from top down */}
         <div className="absolute bottom-0 left-0 right-0 flex items-start justify-center" style={{ height: '50%' }}>
           {!positive && (
             <div
-              className="w-full rounded-b-lg bg-gradient-to-b from-red-500 to-red-600 shadow-lg"
+              className={`w-full rounded-b-md shadow bg-gradient-to-b ${grad}`}
               style={{
                 height: `${barPct}%`,
                 transformOrigin: 'top',
                 transform: isVisible ? 'scaleY(1)' : 'scaleY(0)',
-                transition: `transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${animDelay}s`,
+                transition: `transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`,
               }}
             />
           )}
         </div>
       </div>
 
-      {/* Percentage label — below bar if negative */}
       {!positive && (
         <div
-          className="mt-1 h-8 flex items-start transition-all"
+          className="mt-1 h-6 flex items-start transition-all"
           style={{
             opacity: isVisible ? 1 : 0,
             transform: isVisible ? 'translateY(0)' : 'translateY(-8px)',
@@ -188,19 +175,13 @@ function BarColumn({
             transitionDuration: '0.4s',
           }}
         >
-          <span className="text-xl font-bold text-red-600">
-            {formatReturn(value)}
-          </span>
+          <span className={`text-sm font-bold ${textColor}`}>{format(value)}</span>
         </div>
       )}
-      {/* Spacer if positive (keep alignment) */}
-      {positive && <div className="h-8" />}
+      {positive && <div className="h-6" />}
 
-      {/* Category label — always at the bottom, outside chart */}
-      <div className="text-center mt-1">
-        <p className="text-sm font-semibold text-slate-700">{label}</p>
-        <p className="text-xs text-slate-400">{sublabel}</p>
-      </div>
+      <p className="text-xs font-semibold text-slate-600 mt-1">{label}</p>
+      {subtitle && <p className="text-[9px] text-slate-400 leading-tight">{subtitle}</p>}
     </div>
   )
 }

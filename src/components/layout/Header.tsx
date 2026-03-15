@@ -1,11 +1,22 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export function Header() {
-  const [lang, setLang] = useState<'tr' | 'en'>('tr')
   const [moreOpen, setMoreOpen] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const moreRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setMoreOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   return (
     <header className="border-b border-slate-200 bg-white shadow-sm">
@@ -16,46 +27,33 @@ export function Header() {
             Göstergeç
           </Link>
 
-          {/* Navigation */}
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-5">
-            <Link
-              href="/funds"
-              className="text-slate-600 hover:text-slate-900 font-medium transition"
-            >
-              {lang === 'tr' ? 'Analiz' : 'Analysis'}
+            <Link href="/funds" className="text-slate-600 hover:text-slate-900 font-medium transition">
+              Analiz
             </Link>
-            <Link
-              href="/compare"
-              className="text-slate-600 hover:text-slate-900 font-medium transition"
-            >
-              {lang === 'tr' ? 'Karşılaştır' : 'Compare'}
+            <Link href="/compare" className="text-slate-600 hover:text-slate-900 font-medium transition">
+              Karşılaştır
             </Link>
-            <Link
-              href="/leaderboard"
-              className="text-slate-600 hover:text-slate-900 font-medium transition"
-            >
-              {lang === 'tr' ? 'Sıralama' : 'Rankings'}
+            <Link href="/leaderboard" className="text-slate-600 hover:text-slate-900 font-medium transition">
+              Sıralama
             </Link>
-            <Link
-              href="/report-cards"
-              className="text-slate-600 hover:text-slate-900 font-medium transition"
-            >
-              {lang === 'tr' ? 'Karneler' : 'Grades'}
+            <Link href="/report-cards" className="text-slate-600 hover:text-slate-900 font-medium transition">
+              Karneler
             </Link>
-            <Link
-              href="/bes"
-              className="text-amber-600 hover:text-amber-700 font-semibold transition"
-            >
+            <Link href="/bes" className="text-amber-600 hover:text-amber-700 font-semibold transition">
               BES
             </Link>
 
             {/* More Dropdown */}
-            <div className="relative">
+            <div className="relative" ref={moreRef}>
               <button
                 onClick={() => setMoreOpen(!moreOpen)}
                 className="text-slate-600 hover:text-slate-900 font-medium transition flex items-center gap-1"
+                aria-expanded={moreOpen}
+                aria-label="Daha fazla menü"
               >
-                {lang === 'tr' ? 'Daha Fazla' : 'More'}
+                Daha Fazla
                 <svg className={`w-4 h-4 transition ${moreOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
@@ -63,40 +61,66 @@ export function Header() {
 
               {moreOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-2 z-50">
-                  <Link
-                    href="/heatmap"
-                    className="block px-4 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                    onClick={() => setMoreOpen(false)}
-                  >
-                    {lang === 'tr' ? '🗺️ Sektör Haritası' : '🗺️ Sector Heatmap'}
+                  <Link href="/heatmap" className="block px-4 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900" onClick={() => setMoreOpen(false)}>
+                    Sektör Haritası
                   </Link>
-                  <Link
-                    href="/crypto"
-                    className="block px-4 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                    onClick={() => setMoreOpen(false)}
-                  >
-                    {lang === 'tr' ? '₿ Kripto Karşılaştır' : '₿ Crypto Compare'}
+                  <Link href="/crypto" className="block px-4 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900" onClick={() => setMoreOpen(false)}>
+                    Kripto Karşılaştır
                   </Link>
-                  <Link
-                    href="/real-estate"
-                    className="block px-4 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                    onClick={() => setMoreOpen(false)}
-                  >
-                    {lang === 'tr' ? '🏠 Gayrimenkul' : '🏠 Real Estate'}
+                  <Link href="/real-estate" className="block px-4 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900" onClick={() => setMoreOpen(false)}>
+                    Gayrimenkul
                   </Link>
                 </div>
               )}
             </div>
           </nav>
 
-          {/* Language Toggle */}
+          {/* Mobile Hamburger */}
           <button
-            onClick={() => setLang(lang === 'tr' ? 'en' : 'tr')}
-            className="px-3 py-1.5 text-sm font-medium border border-slate-300 rounded-md hover:bg-slate-100 text-slate-700 transition"
+            className="md:hidden p-2 text-slate-600 hover:text-slate-900"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-expanded={mobileOpen}
+            aria-label="Menüyü aç"
           >
-            {lang === 'tr' ? 'EN' : 'TR'}
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {mobileOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
           </button>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileOpen && (
+          <nav className="md:hidden pb-4 space-y-1">
+            <Link href="/funds" className="block px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-lg font-medium" onClick={() => setMobileOpen(false)}>
+              Analiz
+            </Link>
+            <Link href="/compare" className="block px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-lg font-medium" onClick={() => setMobileOpen(false)}>
+              Karşılaştır
+            </Link>
+            <Link href="/leaderboard" className="block px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-lg font-medium" onClick={() => setMobileOpen(false)}>
+              Sıralama
+            </Link>
+            <Link href="/report-cards" className="block px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-lg font-medium" onClick={() => setMobileOpen(false)}>
+              Karneler
+            </Link>
+            <Link href="/bes" className="block px-3 py-2 text-amber-600 hover:bg-amber-50 rounded-lg font-semibold" onClick={() => setMobileOpen(false)}>
+              BES
+            </Link>
+            <Link href="/heatmap" className="block px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-lg font-medium" onClick={() => setMobileOpen(false)}>
+              Sektör Haritası
+            </Link>
+            <Link href="/crypto" className="block px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-lg font-medium" onClick={() => setMobileOpen(false)}>
+              Kripto Karşılaştır
+            </Link>
+            <Link href="/real-estate" className="block px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-lg font-medium" onClick={() => setMobileOpen(false)}>
+              Gayrimenkul
+            </Link>
+          </nav>
+        )}
       </div>
     </header>
   )
