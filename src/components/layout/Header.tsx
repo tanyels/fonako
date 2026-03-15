@@ -84,6 +84,42 @@ export function Header() {
                   >
                     {lang === 'tr' ? '🏠 Gayrimenkul' : '🏠 Real Estate'}
                   </Link>
+                  <div className="border-t border-slate-100 my-1" />
+                  <Link
+                    href="/recommend/score"
+                    className="block px-4 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    onClick={() => setMoreOpen(false)}
+                  >
+                    {lang === 'tr' ? '🏆 Fon Skorlama' : '🏆 Fund Scoring'}
+                  </Link>
+                  <Link
+                    href="/recommend/projection"
+                    className="block px-4 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    onClick={() => setMoreOpen(false)}
+                  >
+                    {lang === 'tr' ? '📊 Monte Carlo' : '📊 Monte Carlo'}
+                  </Link>
+                  <Link
+                    href="/recommend/portfolio"
+                    className="block px-4 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    onClick={() => setMoreOpen(false)}
+                  >
+                    {lang === 'tr' ? '💼 Portföy' : '💼 Portfolio'}
+                  </Link>
+                  <Link
+                    href="/recommend/profile"
+                    className="block px-4 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    onClick={() => setMoreOpen(false)}
+                  >
+                    {lang === 'tr' ? '👤 Profil Eşleştir' : '👤 Profile Match'}
+                  </Link>
+                  <Link
+                    href="/recommend/macro"
+                    className="block px-4 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    onClick={() => setMoreOpen(false)}
+                  >
+                    {lang === 'tr' ? '🌍 Makro Rejim' : '🌍 Macro Regime'}
+                  </Link>
                 </div>
               )}
             </div>

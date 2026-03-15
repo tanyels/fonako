@@ -74,3 +74,100 @@ export async function getAllFunds(): Promise<Fund[]> {
   if (error) throw error
   return data || []
 }
+
+// ── Fund Returns ──
+
+export interface FundReturn {
+  id: number
+  fund_code: string
+  period: string
+  try_return: number | null
+  usd_return: number | null
+  eur_return: number | null
+  gold_return: number | null
+  calculated_at: string
+}
+
+export async function getFundReturns(period: string): Promise<FundReturn[]> {
+  const { data, error } = await supabase
+    .from('fund_returns')
+    .select('*')
+    .eq('period', period)
+
+  if (error) throw error
+  return data || []
+}
+
+export async function getAllFundReturns(): Promise<FundReturn[]> {
+  const { data, error } = await supabase
+    .from('fund_returns')
+    .select('*')
+
+  if (error) throw error
+  return data || []
+}
+
+// ── Fund Details with Asset Allocation ──
+
+export interface FundDetailRow {
+  fund_code: string
+  market_cap: number | null
+  investor_count: number | null
+  asset_allocation: Record<string, number> | null
+}
+
+export async function getAllFundDetails(): Promise<Fund[]> {
+  return getAllFunds()
+}
+
+export async function getAllFundDetailsWithAllocation(): Promise<
+  { fund_code: string; name: string; category: string; manager: string; market_cap: number | null; investor_count: number | null; asset_allocation: Record<string, number> | null }[]
+> {
+  // Fetch funds and fund_details in parallel
+  const [funds, details] = await Promise.all([
+    getAllFunds(),
+    fetchFundDetails(),
+  ])
+
+  const detailMap = new Map<string, FundDetailRow>()
+  details.forEach((d) => detailMap.set(d.fund_code, d))
+
+  return funds.map((f) => {
+    const d = detailMap.get(f.code)
+    return {
+      fund_code: f.code,
+      name: f.name,
+      category: f.category,
+      manager: f.manager,
+      market_cap: d?.market_cap ?? null,
+      investor_count: d?.investor_count ?? null,
+      asset_allocation: d?.asset_allocation ?? null,
+    }
+  })
+}
+
+async function fetchFundDetails(): Promise<FundDetailRow[]> {
+  // Paginate in batches of 500
+  const all: FundDetailRow[] = []
+  let from = 0
+  const batchSize = 500
+
+  while (true) {
+    const { data, error } = await supabase
+      .from('fund_details')
+      .select('fund_code, market_cap, investor_count, asset_allocation')
+      .range(from, from + batchSize - 1)
+
+    if (error) {
+      // Table may not exist yet — return empty
+      console.warn('fund_details fetch failed:', error.message)
+      return []
+    }
+    if (!data || data.length === 0) break
+    all.push(...data)
+    if (data.length < batchSize) break
+    from += batchSize
+  }
+
+  return all
+}
