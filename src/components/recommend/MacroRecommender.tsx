@@ -5,6 +5,7 @@ import { calculateMacroScores, FACTOR_LABELS, DIRECTION_LABELS } from '@/lib/rec
 import type { MacroDirection, MacroCategoryScore } from '@/lib/recommend/types'
 import { useFundBatchLookup, type FundReturn } from '@/lib/recommend/types'
 import { getFundReturns } from '@/lib/api/supabase'
+import { TefasToggle } from '@/components/ui/TefasToggle'
 
 interface MacroInputs {
   inflation: MacroDirection
@@ -61,6 +62,9 @@ export function MacroRecommender() {
       {/* Factor Toggles */}
       <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
         <h2 className="text-lg font-bold text-slate-800 mb-4">Makro Beklentileriniz</h2>
+        <div className="mb-4">
+          <TefasToggle />
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {(Object.keys(FACTOR_LABELS) as (keyof MacroInputs)[]).map((factor) => (
             <div key={factor} className="space-y-2">

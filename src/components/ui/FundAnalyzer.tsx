@@ -3,24 +3,28 @@
 import { useState } from 'react'
 import { FUNDS } from '@/lib/data/funds'
 import { PerformanceChart } from '@/components/charts/PerformanceChart'
+import { useTefasFilter } from '@/lib/context/TefasFilterContext'
+import { TefasToggle } from '@/components/ui/TefasToggle'
 
 export function FundAnalyzer() {
   const [selectedFund, setSelectedFund] = useState('')
   const [period, setPeriod] = useState<'1Y' | '3Y' | '5Y' | '10Y'>('1Y')
+  const { showOnlyTefas } = useTefasFilter()
+  const filteredFunds = showOnlyTefas ? FUNDS.filter((f) => f.is_tefas) : FUNDS
 
-  const fund = FUNDS.find((f) => f.code === selectedFund)
+  const fund = filteredFunds.find((f) => f.code === selectedFund) ?? FUNDS.find((f) => f.code === selectedFund)
 
   return (
     <div className="space-y-6">
       {/* Controls */}
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-4 items-center">
         <select
           value={selectedFund}
           onChange={(e) => setSelectedFund(e.target.value)}
           className="border border-slate-300 rounded-lg px-4 py-2 min-w-[250px] text-slate-700 bg-white font-medium focus:ring-2 focus:ring-slate-400"
         >
           <option value="">Fon seçin / Select fund...</option>
-          {FUNDS.map((f) => (
+          {filteredFunds.map((f) => (
             <option key={f.code} value={f.code}>
               {f.name} ({f.code})
             </option>
@@ -42,6 +46,8 @@ export function FundAnalyzer() {
             </button>
           ))}
         </div>
+
+        <TefasToggle />
       </div>
 
       {/* Fund Info */}

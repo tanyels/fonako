@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { getAllFunds, type Fund } from '@/lib/api/supabase'
+import { useTefasFilter } from '@/lib/context/TefasFilterContext'
 
 // ── Shared types ──
 
@@ -19,6 +20,7 @@ export interface FundDetail {
   name: string
   category: string
   manager: string
+  is_tefas: boolean
   market_cap: number | null
   investor_count: number | null
   asset_allocation: Record<string, number> | null
@@ -93,42 +95,53 @@ export interface MacroCategoryScore {
 
 // ── Hooks ──
 
-export function useFundBatchLookup(): {
+export function useFundBatchLookup(overrideIncludeAll?: boolean): {
   lookup: Map<string, Fund>
   loading: boolean
 } {
-  const [lookup, setLookup] = useState<Map<string, Fund>>(new Map())
+  const { showOnlyTefas } = useTefasFilter()
+  const [allFunds, setAllFunds] = useState<Fund[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     getAllFunds()
       .then((funds) => {
-        const map = new Map<string, Fund>()
-        funds.forEach((f) => map.set(f.code, f))
-        setLookup(map)
+        setAllFunds(funds)
         setLoading(false)
       })
       .catch(() => setLoading(false))
   }, [])
 
+  const shouldFilter = showOnlyTefas && !overrideIncludeAll
+  const lookup = new Map<string, Fund>()
+  allFunds.forEach((f) => {
+    if (!shouldFilter || f.is_tefas) {
+      lookup.set(f.code, f)
+    }
+  })
+
   return { lookup, loading }
 }
 
-export function useFundLookup(): {
+export function useFundLookup(overrideIncludeAll?: boolean): {
   funds: Fund[]
   loading: boolean
 } {
-  const [funds, setFunds] = useState<Fund[]>([])
+  const { showOnlyTefas } = useTefasFilter()
+  const [allFunds, setAllFunds] = useState<Fund[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     getAllFunds()
       .then((data) => {
-        setFunds(data)
+        setAllFunds(data)
         setLoading(false)
       })
       .catch(() => setLoading(false))
   }, [])
+
+  const shouldFilter = showOnlyTefas && !overrideIncludeAll
+  const funds = shouldFilter ? allFunds.filter((f) => f.is_tefas) : allFunds
 
   return { funds, loading }
 }

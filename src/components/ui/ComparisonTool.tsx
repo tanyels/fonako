@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { FUNDS } from '@/lib/data/funds'
 import { ComparisonChart } from '@/components/charts/ComparisonChart'
+import { useTefasFilter } from '@/lib/context/TefasFilterContext'
+import { TefasToggle } from '@/components/ui/TefasToggle'
 
 type Benchmark = 'USD' | 'EUR' | 'GOLD' | 'SP500'
 
@@ -11,8 +13,10 @@ export function ComparisonTool() {
   const [benchmark, setBenchmark] = useState<Benchmark>('USD')
   const [startDate, setStartDate] = useState('2020-01-01')
   const [amount, setAmount] = useState('100000')
+  const { showOnlyTefas } = useTefasFilter()
+  const filteredFunds = showOnlyTefas ? FUNDS.filter((f) => f.is_tefas) : FUNDS
 
-  const fund = FUNDS.find((f) => f.code === selectedFund)
+  const fund = filteredFunds.find((f) => f.code === selectedFund) ?? FUNDS.find((f) => f.code === selectedFund)
 
   // Placeholder calculation results
   const fundFinalValue = 185400
@@ -23,6 +27,9 @@ export function ComparisonTool() {
     <div className="space-y-6">
       {/* Controls */}
       <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+        <div className="mb-4">
+          <TefasToggle />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Fund Selection */}
           <div>
@@ -33,7 +40,7 @@ export function ComparisonTool() {
               className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-700 bg-white font-medium focus:ring-2 focus:ring-slate-400"
             >
               <option value="">Seçin...</option>
-              {FUNDS.map((f) => (
+              {filteredFunds.map((f) => (
                 <option key={f.code} value={f.code}>
                   {f.name}
                 </option>

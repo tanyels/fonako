@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { TefasFilterProvider } from '@/lib/context/TefasFilterContext'
 
 export const metadata: Metadata = {
   title: 'Göstergeç - Gerçek Getiri Hesaplayıcı',
@@ -16,11 +17,13 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1">
-          {children}
-        </main>
-        <Footer />
+        <TefasFilterProvider>
+          <Header />
+          <main className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </TefasFilterProvider>
       </body>
     </html>
   )

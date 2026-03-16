@@ -30,6 +30,7 @@ export interface Fund {
   category: string
   manager: string
   inception_date: string
+  is_tefas: boolean
 }
 
 // Query functions
@@ -121,7 +122,7 @@ export async function getAllFundDetails(): Promise<Fund[]> {
 }
 
 export async function getAllFundDetailsWithAllocation(): Promise<
-  { fund_code: string; name: string; category: string; manager: string; market_cap: number | null; investor_count: number | null; asset_allocation: Record<string, number> | null }[]
+  { fund_code: string; name: string; category: string; manager: string; is_tefas: boolean; market_cap: number | null; investor_count: number | null; asset_allocation: Record<string, number> | null }[]
 > {
   // Fetch funds and fund_details in parallel
   const [funds, details] = await Promise.all([
@@ -139,6 +140,7 @@ export async function getAllFundDetailsWithAllocation(): Promise<
       name: f.name,
       category: f.category,
       manager: f.manager,
+      is_tefas: f.is_tefas,
       market_cap: d?.market_cap ?? null,
       investor_count: d?.investor_count ?? null,
       asset_allocation: d?.asset_allocation ?? null,

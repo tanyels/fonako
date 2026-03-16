@@ -8,6 +8,7 @@ export interface FundInfo {
   name: string
   category: string
   manager: string
+  is_tefas: boolean
 }
 
 export const FUNDS: FundInfo[] = [
@@ -17,12 +18,14 @@ export const FUNDS: FundInfo[] = [
     name: 'Yapı Kredi Portföy Altın Fonu',
     category: 'Altın',
     manager: 'Yapı Kredi Portföy',
+    is_tefas: true,
   },
   {
     code: 'GAL',
     name: 'Garanti Portföy Altın Fonu',
     category: 'Altın',
     manager: 'Garanti Portföy',
+    is_tefas: true,
   },
 
   // Equity Funds (Hisse Senedi Fonları)
@@ -31,12 +34,14 @@ export const FUNDS: FundInfo[] = [
     name: 'İş Portföy BIST Banka Endeksi Fonu',
     category: 'Hisse',
     manager: 'İş Portföy',
+    is_tefas: true,
   },
   {
     code: 'TTE',
     name: 'TEB Portföy Hisse Senedi Fonu',
     category: 'Hisse',
     manager: 'TEB Portföy',
+    is_tefas: true,
   },
 
   // Foreign/US Funds (Yabancı Fonlar)
@@ -45,12 +50,14 @@ export const FUNDS: FundInfo[] = [
     name: 'Ak Portföy Amerika Yabancı Hisse Fonu',
     category: 'Yabancı Hisse',
     manager: 'Ak Portföy',
+    is_tefas: true,
   },
   {
     code: 'AFA',
     name: 'Ak Portföy BIST 30 Fonu',
     category: 'Hisse',
     manager: 'Ak Portföy',
+    is_tefas: true,
   },
 
   // Bond Funds (Tahvil Fonları)
@@ -59,6 +66,7 @@ export const FUNDS: FundInfo[] = [
     name: 'İş Portföy Devlet Tahvili Fonu',
     category: 'Tahvil',
     manager: 'İş Portföy',
+    is_tefas: true,
   },
 
   // Money Market (Para Piyasası)
@@ -67,12 +75,14 @@ export const FUNDS: FundInfo[] = [
     name: 'Ak Portföy Para Piyasası Fonu',
     category: 'Para Piyasası',
     manager: 'Ak Portföy',
+    is_tefas: true,
   },
   {
     code: 'YKP',
     name: 'Yapı Kredi Para Piyasası Fonu',
     category: 'Para Piyasası',
     manager: 'Yapı Kredi Portföy',
+    is_tefas: true,
   },
 
   // Currency Funds (Döviz Fonları)
@@ -81,6 +91,7 @@ export const FUNDS: FundInfo[] = [
     name: 'Garanti Portföy Euro Fonu',
     category: 'Döviz',
     manager: 'Garanti Portföy',
+    is_tefas: true,
   },
 ]
 

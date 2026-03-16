@@ -7,6 +7,7 @@ import type { RiskLevel, Currency, ScoredFund } from '@/lib/recommend/types'
 import { getAllFundReturns } from '@/lib/api/supabase'
 import { getCachedFundDetails } from '@/lib/api/fundDetailsCache'
 import { FUND_CATEGORIES } from '@/lib/data/funds'
+import { TefasToggle } from '@/components/ui/TefasToggle'
 
 const RISK_LABELS: Record<RiskLevel, string> = {
   low: 'Düşük Risk',
@@ -83,6 +84,11 @@ export function ScoreRecommender() {
       <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
         <h2 className="text-lg font-bold text-slate-800 mb-4">Tercihleriniz</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* TEFAS Filter */}
+          <div className="sm:col-span-2 lg:col-span-4">
+            <TefasToggle />
+          </div>
+
           {/* Risk */}
           <div className="space-y-2">
             <label className="text-sm font-semibold text-slate-700">Risk Toleransı</label>

@@ -5,6 +5,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        '3xl': '2560px',
+        '4k': '3840px',
+      },
       colors: {
         // Brand colors
         brand: {

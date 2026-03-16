@@ -5,6 +5,7 @@ import { SURVEY_QUESTIONS, matchFundsToProfile, type SurveyAnswers } from '@/lib
 import type { ProfileResult } from '@/lib/recommend/types'
 import { getCachedFundDetails } from '@/lib/api/fundDetailsCache'
 import { getAllFundReturns } from '@/lib/api/supabase'
+import { TefasToggle } from '@/components/ui/TefasToggle'
 
 const PROFILE_ICONS: Record<string, string> = {
   'Muhafazakar': '🛡️',
@@ -87,8 +88,9 @@ export function ProfileRecommender() {
 
         {/* Recommended Funds */}
         <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
             <h3 className="font-bold text-slate-800">Profilinize Uygun Fonlar</h3>
+            <TefasToggle />
           </div>
           {result.matchedFunds.length > 0 ? (
             <table className="w-full">

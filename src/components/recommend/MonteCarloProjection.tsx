@@ -15,6 +15,7 @@ import { runMonteCarlo } from '@/lib/recommend/montecarlo'
 import { useFundLookup } from '@/lib/recommend/types'
 import type { MonteCarloOutput } from '@/lib/recommend/types'
 import { getFundPrices } from '@/lib/api/supabase'
+import { TefasToggle } from '@/components/ui/TefasToggle'
 
 function formatCurrency(val: number): string {
   if (val >= 1_000_000) return `${(val / 1_000_000).toFixed(1)}M`
@@ -76,6 +77,11 @@ export function MonteCarloProjection() {
       <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
         <h2 className="text-lg font-bold text-slate-800 mb-4">Simülasyon Parametreleri</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* TEFAS Filter */}
+          <div className="sm:col-span-2">
+            <TefasToggle />
+          </div>
+
           {/* Fund Search */}
           <div className="space-y-2 sm:col-span-2">
             <label className="text-sm font-semibold text-slate-700">Fon Seçimi</label>

@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { FUNDS } from '@/lib/data/funds'
 import { calculateRealReturns, type RealReturns } from '@/lib/utils/calculations'
+import { useTefasFilter } from '@/lib/context/TefasFilterContext'
+import { TefasToggle } from '@/components/ui/TefasToggle'
 
 // ---------------------------------------------------------------------------
 // Losers list: funds likely to show positive TL return but negative USD return
@@ -382,6 +384,7 @@ interface GercekSonucProps {
   fundName: string
   onFundChange: (code: string) => void
   onAmountChange: (amount: number) => void
+  filteredFunds: typeof FUNDS
 }
 
 function GercekSonuc({
@@ -398,6 +401,7 @@ function GercekSonuc({
   fundName,
   onFundChange,
   onAmountChange,
+  filteredFunds,
 }: GercekSonucProps) {
   const [ref, isVisible] = useIntersectionObserver(0.2)
 
@@ -405,15 +409,23 @@ function GercekSonuc({
   const usdDiff = endUSD - startUSD
   const goldDiff = endGold - startGold
 
-  // Gold bar SVG icon
+  // 3D gold bar SVG icon — fixed amber/gold colors, not currentColor
   const goldIcon = (
     <svg
-      className="w-5 h-5"
+      className="w-8 h-8"
       viewBox="0 0 24 24"
-      fill="currentColor"
+      fill="none"
     >
-      <rect x="4" y="8" width="16" height="8" rx="1.5" />
-      <rect x="6" y="6" width="12" height="4" rx="1" opacity="0.7" />
+      {/* Bottom shadow */}
+      <path d="M2 16L6 18L22 18L18 16H2Z" fill="#92400e" />
+      {/* Front face */}
+      <path d="M2 12L2 16L18 16L18 12H2Z" fill="#d97706" />
+      {/* Top face (brightest) */}
+      <path d="M2 12L6 9H22L18 12H2Z" fill="#fbbf24" />
+      {/* Right side face */}
+      <path d="M18 12L22 9L22 18L18 16V12Z" fill="#b45309" />
+      {/* Shine highlight on top */}
+      <path d="M5 11L10 9" stroke="#fef3c7" strokeWidth="1" opacity="0.8" strokeLinecap="round" />
     </svg>
   )
 
@@ -435,7 +447,7 @@ function GercekSonuc({
           className="inline-block border border-slate-300 rounded px-2 py-0.5 text-sm font-semibold text-slate-800 bg-white focus:ring-2 focus:ring-slate-400 focus:border-slate-400 mx-1"
         >
           <option value="">Se&#xe7;in...</option>
-          {FUNDS.map((fund) => (
+          {filteredFunds.map((fund) => (
             <option key={fund.code} value={fund.code}>
               {fund.code} - {fund.name}
             </option>
@@ -544,6 +556,8 @@ export function HeroVisual() {
   const [amount, setAmount] = useState(10000)
   const [results, setResults] = useState<RealReturns | null>(null)
   const [loading, setLoading] = useState(false)
+  const { showOnlyTefas } = useTefasFilter()
+  const filteredFunds = showOnlyTefas ? FUNDS.filter((f) => f.is_tefas) : FUNDS
 
   // Auto-select first suitable loser fund on mount
   useEffect(() => {
@@ -642,7 +656,7 @@ export function HeroVisual() {
         endValueGold: (1 + 0.67) * amount / 3200,
       }
 
-  const fundInfo = FUNDS.find((f) => f.code === selectedFund)
+  const fundInfo = filteredFunds.find((f) => f.code === selectedFund) ?? FUNDS.find((f) => f.code === selectedFund)
   const fundName = fundInfo?.name ?? selectedFund
 
   return (
@@ -657,6 +671,9 @@ export function HeroVisual() {
           alt&#x131;n kar&#x15F;&#x131;s&#x131;nda ger&#xe7;ek tablo &#xe7;ok
           farkl&#x131;.
         </p>
+        <div className="mt-3 flex justify-center">
+          <TefasToggle />
+        </div>
       </div>
 
       {/* Loading indicator */}
@@ -687,6 +704,7 @@ export function HeroVisual() {
           fundName={fundName}
           onFundChange={setSelectedFund}
           onAmountChange={setAmount}
+          filteredFunds={filteredFunds}
         />
       </div>
     </section>

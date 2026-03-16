@@ -59,3 +59,17 @@ body {
 .btn-secondary {
   @apply bg-white text-slate-700 py-2 px-4 rounded-lg border border-slate-300 hover:bg-slate-50 transition font-medium;
 }
+
+/* 4K / Ultra-wide ekranlar için font ölçekleme */
+/* Tüm rem-bazlı Tailwind boyutları otomatik büyür */
+@media (min-width: 2560px) {
+  html {
+    font-size: 18px; /* varsayılan 16px → %12.5 büyüme */
+  }
+}
+
+@media (min-width: 3840px) {
+  html {
+    font-size: 20px; /* true 4K (100% scaling) → %25 büyüme */
+  }
+}

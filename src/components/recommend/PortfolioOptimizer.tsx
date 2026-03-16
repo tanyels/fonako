@@ -14,6 +14,7 @@ import type { PortfolioResult } from '@/lib/recommend/types'
 import { getCachedFundDetails } from '@/lib/api/fundDetailsCache'
 import { getAllFundReturns } from '@/lib/api/supabase'
 import { FUND_CATEGORIES } from '@/lib/data/funds'
+import { TefasToggle } from '@/components/ui/TefasToggle'
 
 const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4']
 
@@ -65,6 +66,11 @@ export function PortfolioOptimizer() {
       <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
         <h2 className="text-lg font-bold text-slate-800 mb-4">Portföy Parametreleri</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* TEFAS Filter */}
+          <div className="sm:col-span-2 lg:col-span-3">
+            <TefasToggle />
+          </div>
+
           {/* Risk Slider */}
           <div className="space-y-2">
             <label className="text-sm font-semibold text-slate-700">

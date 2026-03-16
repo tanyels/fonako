@@ -2,10 +2,12 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { useTefasFilter } from '@/lib/context/TefasFilterContext'
 
 export function Header() {
   const [lang, setLang] = useState<'tr' | 'en'>('tr')
   const [moreOpen, setMoreOpen] = useState(false)
+  const { showOnlyTefas, setShowOnlyTefas } = useTefasFilter()
 
   return (
     <header className="border-b border-slate-200 bg-white shadow-sm">
@@ -125,13 +127,26 @@ export function Header() {
             </div>
           </nav>
 
-          {/* Language Toggle */}
-          <button
-            onClick={() => setLang(lang === 'tr' ? 'en' : 'tr')}
-            className="px-3 py-1.5 text-sm font-medium border border-slate-300 rounded-md hover:bg-slate-100 text-slate-700 transition"
-          >
-            {lang === 'tr' ? 'EN' : 'TR'}
-          </button>
+          {/* Toggles */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowOnlyTefas(!showOnlyTefas)}
+              className={`px-3 py-1.5 text-sm font-medium border rounded-md transition ${
+                showOnlyTefas
+                  ? 'border-slate-300 text-slate-700 hover:bg-slate-100'
+                  : 'border-amber-400 bg-amber-50 text-amber-700 hover:bg-amber-100'
+              }`}
+              title={showOnlyTefas ? 'Sadece TEFAS fonları gösteriliyor' : 'Tüm fonlar gösteriliyor (özel fonlar dahil)'}
+            >
+              {showOnlyTefas ? 'TEFAS' : 'Tümü'}
+            </button>
+            <button
+              onClick={() => setLang(lang === 'tr' ? 'en' : 'tr')}
+              className="px-3 py-1.5 text-sm font-medium border border-slate-300 rounded-md hover:bg-slate-100 text-slate-700 transition"
+            >
+              {lang === 'tr' ? 'EN' : 'TR'}
+            </button>
+          </div>
         </div>
       </div>
     </header>
