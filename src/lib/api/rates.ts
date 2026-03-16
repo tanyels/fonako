@@ -21,7 +21,10 @@ export async function fetchLiveRates(): Promise<LiveRates> {
     // For gold, we'll use a placeholder until we set up a real API
     // Options: metals.live, goldapi.io (free tier), or calculate from XAU/USD
     const goldUsd = 2650 // Placeholder - will fetch from API
-    const goldTry = goldUsd * forexData.rates.TRY / 31.1035 // Convert to per gram
+    // Convert XAU/USD to per-gram TRY, with ~3% domestic premium
+    // (import duty, bank margin, local demand premium in Turkish market)
+    const DOMESTIC_GOLD_PREMIUM = 1.03
+    const goldTry = (goldUsd * forexData.rates.TRY / 31.1035) * DOMESTIC_GOLD_PREMIUM
 
     return {
       usdTry: forexData.rates.TRY,

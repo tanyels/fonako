@@ -26,6 +26,16 @@ export function Header() {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [mobileOpen])
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [mobileOpen])
+
   const navLinks = [
     { href: '/funds', label: lang === 'tr' ? 'Analiz' : 'Analysis' },
     { href: '/compare', label: lang === 'tr' ? 'Karşılaştır' : 'Compare' },

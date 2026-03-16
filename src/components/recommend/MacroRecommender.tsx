@@ -45,10 +45,12 @@ export function MacroRecommender() {
 
     if (allReturns.length === 0) return
 
+    // Explicitly filter returns by TEFAS status via lookup (lookup already respects showOnlyTefas)
+    const filteredReturns = allReturns.filter((r) => lookup.has(r.fund_code))
+
     const byCategory = new Map<string, FundReturn[]>()
-    allReturns.forEach((r) => {
-      const fundInfo = lookup.get(r.fund_code)
-      if (!fundInfo) return
+    filteredReturns.forEach((r) => {
+      const fundInfo = lookup.get(r.fund_code)!
       const cat = fundInfo.category
       const arr = byCategory.get(cat) || []
       arr.push(r)

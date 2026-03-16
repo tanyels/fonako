@@ -37,12 +37,31 @@ export async function calculateRealReturns(params: CalculateParams): Promise<Rea
       throw new Error('Insufficient data for calculation')
     }
 
-    // Get start and end values
-    const startFundPrice = fundPrices[0].price_try
-    const endFundPrice = fundPrices[fundPrices.length - 1].price_try
+    // Align dates: fund prices and exchange rates may start/end on different days
+    // (e.g., weekends, holidays). Use the overlapping date range.
+    const actualStart = fundPrices[0].date > exchangeRates[0].date
+      ? fundPrices[0].date
+      : exchangeRates[0].date
+    const actualEnd = fundPrices[fundPrices.length - 1].date < exchangeRates[exchangeRates.length - 1].date
+      ? fundPrices[fundPrices.length - 1].date
+      : exchangeRates[exchangeRates.length - 1].date
 
-    const startRates = exchangeRates[0]
-    const endRates = exchangeRates[exchangeRates.length - 1]
+    // Find the closest data points at or after actualStart, and at or before actualEnd
+    const startFundIdx = fundPrices.findIndex((p) => p.date >= actualStart)
+    const endFundIdx = findLastIndex(fundPrices, (p) => p.date <= actualEnd)
+    const startRateIdx = exchangeRates.findIndex((r) => r.date >= actualStart)
+    const endRateIdx = findLastIndex(exchangeRates, (r) => r.date <= actualEnd)
+
+    if (startFundIdx < 0 || endFundIdx < 0 || startRateIdx < 0 || endRateIdx < 0 || startFundIdx >= endFundIdx) {
+      throw new Error('Insufficient overlapping data between fund prices and exchange rates')
+    }
+
+    // Get start and end values using aligned dates
+    const startFundPrice = fundPrices[startFundIdx].price_try
+    const endFundPrice = fundPrices[endFundIdx].price_try
+
+    const startRates = exchangeRates[startRateIdx]
+    const endRates = exchangeRates[endRateIdx]
 
     // Calculate fund units purchased
     const units = amountTry / startFundPrice
@@ -108,4 +127,12 @@ export function calculateBenchmark(
       return goldBought * endRates.gold_try_gram
     }
   }
+}
+
+/** Finds the last index in an array matching a predicate (Array.findLastIndex polyfill) */
+function findLastIndex<T>(arr: T[], predicate: (item: T) => boolean): number {
+  for (let i = arr.length - 1; i >= 0; i--) {
+    if (predicate(arr[i])) return i
+  }
+  return -1
 }

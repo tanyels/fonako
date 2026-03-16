@@ -5,15 +5,17 @@ import { FALLBACK_USD_TRY } from '@/lib/constants'
 
 export function WithdrawalCalculator() {
   const [currentValue, setCurrentValue] = useState('100000')
+  const [totalContributed, setTotalContributed] = useState('70000')
   const [yearsInSystem, setYearsInSystem] = useState('5')
   const [expectedUsdLoss, setExpectedUsdLoss] = useState('15')
 
   const value = parseFloat(currentValue) || 0
+  const contributed = parseFloat(totalContributed) || 0
   const years = parseInt(yearsInSystem) || 0
   const annualLoss = parseFloat(expectedUsdLoss) || 0
 
   // Calculate scenarios
-  const results = calculateWithdrawalScenarios(value, years, annualLoss)
+  const results = calculateWithdrawalScenarios(value, contributed, years, annualLoss)
 
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
@@ -25,7 +27,7 @@ export function WithdrawalCalculator() {
       </p>
 
       {/* Inputs */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div>
           <label className="block text-sm font-medium text-slate-600 mb-1">
             Mevcut Değer (₺)
@@ -36,6 +38,18 @@ export function WithdrawalCalculator() {
             onChange={(e) => setCurrentValue(e.target.value)}
             className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-700"
           />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-600 mb-1">
+            Toplam Katkı Payı (₺)
+          </label>
+          <input
+            type="number"
+            value={totalContributed}
+            onChange={(e) => setTotalContributed(e.target.value)}
+            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-700"
+          />
+          <p className="text-xs text-slate-400 mt-0.5">Yatırdığınız toplam tutar (ana para)</p>
         </div>
         <div>
           <label className="block text-sm font-medium text-slate-600 mb-1">
@@ -162,11 +176,11 @@ interface WithdrawalResults {
   breakEvenYears: number
 }
 
-function calculateWithdrawalScenarios(currentValue: number, yearsInSystem: number, annualLossPercent: number): WithdrawalResults {
+function calculateWithdrawalScenarios(currentValue: number, totalContributed: number, yearsInSystem: number, annualLossPercent: number): WithdrawalResults {
   const usdRate = FALLBACK_USD_TRY
 
   // Calculate penalty based on years in system
-  let penaltyRate = 0.15
+  let penaltyRate = 0.15 // Stopaj (withholding tax) rate
   let govMatchReturn = 0 // Lose all government match
   if (yearsInSystem >= 10) {
     penaltyRate = 0
@@ -179,8 +193,13 @@ function calculateWithdrawalScenarios(currentValue: number, yearsInSystem: numbe
     govMatchReturn = 0.25
   }
 
-  // Value after penalty
-  const afterPenalty = currentValue * (1 - penaltyRate) * 0.85 // Assume 15% was gov match
+  // Tax (stopaj) applies only to profit, not the entire value
+  const profit = Math.max(0, currentValue - totalContributed)
+  const taxAmount = profit * penaltyRate
+  // Government match is ~15% of total value; forfeit based on years
+  const govMatchPortion = currentValue * 0.15
+  const govMatchLoss = govMatchPortion * (1 - govMatchReturn)
+  const afterPenalty = currentValue - taxAmount - govMatchLoss
   const afterPenaltyUSD = afterPenalty / usdRate
 
   // Project forward

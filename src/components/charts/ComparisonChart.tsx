@@ -11,27 +11,18 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-interface ComparisonChartProps {
-  fundCode: string
-  benchmark: 'USD' | 'EUR' | 'GOLD' | 'SP500'
-  startDate: string
+export interface ChartDataPoint {
+  date: string
+  fund: number
+  benchmark: number
 }
 
-// Placeholder data - will come from calculation
-const PLACEHOLDER_DATA = [
-  { date: '2020-01', fund: 100000, benchmark: 100000 },
-  { date: '2020-06', fund: 108000, benchmark: 115000 },
-  { date: '2021-01', fund: 125000, benchmark: 142000 },
-  { date: '2021-06', fund: 138000, benchmark: 158000 },
-  { date: '2022-01', fund: 152000, benchmark: 178000 },
-  { date: '2022-06', fund: 165000, benchmark: 195000 },
-  { date: '2023-01', fund: 178000, benchmark: 205000 },
-  { date: '2023-06', fund: 185400, benchmark: 210000 },
-]
+interface ComparisonChartProps {
+  data: ChartDataPoint[]
+  benchmark: 'USD' | 'EUR' | 'GOLD' | 'SP500'
+}
 
-export function ComparisonChart({ fundCode, benchmark, startDate }: ComparisonChartProps) {
-  // In production, calculate data based on fundCode, benchmark, and startDate
-  const data = PLACEHOLDER_DATA
+export function ComparisonChart({ data, benchmark }: ComparisonChartProps) {
 
   const benchmarkLabel = {
     USD: 'USD Tutsaydınız',

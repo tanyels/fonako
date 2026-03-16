@@ -75,10 +75,11 @@ export function runMonteCarlo(
     const path: number[] = [0]
 
     for (let m = 0; m < durationMonths; m++) {
-      portfolio += monthlyInvestment
+      // Apply return to existing portfolio first, then add new contribution
       const randomReturn = mean + std * boxMuller()
       const clampedReturn = Math.max(randomReturn, -0.99)
       portfolio *= 1 + clampedReturn
+      portfolio += monthlyInvestment
       path.push(portfolio)
     }
 
