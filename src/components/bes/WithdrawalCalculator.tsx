@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { FALLBACK_USD_TRY } from '@/lib/constants'
 
 export function WithdrawalCalculator() {
   const [currentValue, setCurrentValue] = useState('100000')
@@ -162,7 +163,7 @@ interface WithdrawalResults {
 }
 
 function calculateWithdrawalScenarios(currentValue: number, yearsInSystem: number, annualLossPercent: number): WithdrawalResults {
-  const usdRate = 34
+  const usdRate = FALLBACK_USD_TRY
 
   // Calculate penalty based on years in system
   let penaltyRate = 0.15

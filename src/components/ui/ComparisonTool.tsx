@@ -18,7 +18,7 @@ export function ComparisonTool() {
 
   const fund = filteredFunds.find((f) => f.code === selectedFund) ?? FUNDS.find((f) => f.code === selectedFund)
 
-  // Placeholder calculation results
+  // TODO: Replace with calculateRealReturns() from @/lib/utils/calculations
   const fundFinalValue = 185400
   const benchmarkFinalValue = 210000
   const difference = fundFinalValue - benchmarkFinalValue

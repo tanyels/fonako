@@ -8,10 +8,11 @@ interface ScoringWeights {
   riskW: number
 }
 
+// Positive weights sum to 1.0; riskW is an independent penalty subtracted from the score
 const WEIGHTS: Record<RiskLevel, ScoringWeights> = {
-  low:    { returnW: 0.20, consistencyW: 0.30, sizeW: 0.25, popularityW: 0.15, riskW: -0.10 },
-  medium: { returnW: 0.35, consistencyW: 0.25, sizeW: 0.15, popularityW: 0.10, riskW: -0.15 },
-  high:   { returnW: 0.50, consistencyW: 0.15, sizeW: 0.05, popularityW: 0.05, riskW: -0.25 },
+  low:    { returnW: 0.20, consistencyW: 0.35, sizeW: 0.30, popularityW: 0.15, riskW: -0.10 },
+  medium: { returnW: 0.35, consistencyW: 0.30, sizeW: 0.20, popularityW: 0.15, riskW: -0.15 },
+  high:   { returnW: 0.50, consistencyW: 0.25, sizeW: 0.15, popularityW: 0.10, riskW: -0.25 },
 }
 
 function percentile(values: number[], value: number): number {
@@ -69,6 +70,13 @@ export function scoreFunds(
     .map((d) => d.investor_count)
     .filter((v): v is number => v !== null)
 
+  // Pre-compute all spreads once (O(N) instead of O(N^2))
+  const allSpreads = Array.from(byFund.values()).map((returns) => {
+    const vals = returns.map((r) => getReturnValue(r, currency)).filter((v): v is number => v !== null)
+    if (vals.length < 2) return 0
+    return Math.max(...vals) - Math.min(...vals)
+  })
+
   const results: ScoredFund[] = []
 
   periodReturns.forEach((fr) => {
@@ -108,12 +116,6 @@ export function scoreFunds(
       const max = Math.max(...returnValues)
       const min = Math.min(...returnValues)
       const spread = max - min
-      // Normalize: higher spread = higher penalty (0-100)
-      const allSpreads = Array.from(byFund.values()).map((returns) => {
-        const vals = returns.map((r) => getReturnValue(r, currency)).filter((v): v is number => v !== null)
-        if (vals.length < 2) return 0
-        return Math.max(...vals) - Math.min(...vals)
-      })
       riskPenalty = percentile(allSpreads, spread)
     }
 

@@ -35,7 +35,8 @@ const CRYPTO_DATA: CryptoData[] = [
   },
 ]
 
-// TODO: Replace with real fund USD returns from Supabase fund_returns table
+// TODO: Replace with real fund USD returns from Supabase fund_returns table.
+// Also connect crypto data to a live API (e.g. CoinGecko).
 const FUND_RETURNS: { [code: string]: { [year: string]: number } } = {
   'TYH': { '2020': 38, '2021': 5, '2022': 12, '2023': 28, '2024': 22 },
   'IPB': { '2020': -15, '2021': -8, '2022': -25, '2023': 12, '2024': 8 },

@@ -39,8 +39,9 @@ export function RealEstateComparison() {
   const city = CITY_DATA.find(c => c.code === selectedCity)
 
   const initialTL = parseFloat(investmentTL) || 500000
-  const usdRate2020 = 7.5 // Approximate USD/TRY in 2020
-  const usdRate2024 = 34 // Current rate
+  // TODO: Replace hardcoded rates with live data from Supabase exchange_rates
+  const usdRate2020 = 7.5
+  const usdRate2024 = 34
   const initialUSD = initialTL / usdRate2020
 
   // Calculate m² that could be bought

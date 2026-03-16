@@ -22,37 +22,45 @@ export function MacroRecommender() {
     bist: 'stable',
   })
   const [results, setResults] = useState<MacroCategoryScore[]>([])
+  const [allReturns, setAllReturns] = useState<FundReturn[]>([])
   const [topFunds, setTopFunds] = useState<Map<string, FundReturn[]>>(new Map())
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const { lookup } = useFundBatchLookup()
 
+  // Fetch fund returns once on mount
+  useEffect(() => {
+    setLoading(true)
+    setError('')
+    getFundReturns('1Y')
+      .then(setAllReturns)
+      .catch(() => setError('Fon verileri yüklenemedi. Lütfen sayfayı yenileyin.'))
+      .finally(() => setLoading(false))
+  }, [])
+
+  // Recalculate scores and filter client-side when inputs change
   useEffect(() => {
     const scores = calculateMacroScores(inputs)
     setResults(scores)
 
-    // Fetch top funds for each recommended category
-    setLoading(true)
-    getFundReturns('1Y')
-      .then((returns) => {
-        const byCategory = new Map<string, FundReturn[]>()
-        returns.forEach((r) => {
-          const fundInfo = lookup.get(r.fund_code)
-          if (!fundInfo) return
-          const cat = fundInfo.category
-          const arr = byCategory.get(cat) || []
-          arr.push(r)
-          byCategory.set(cat, arr)
-        })
-        // Sort each category by USD return, keep top 5
-        byCategory.forEach((funds, cat) => {
-          funds.sort((a, b) => (b.usd_return ?? 0) - (a.usd_return ?? 0))
-          byCategory.set(cat, funds.slice(0, 5))
-        })
-        setTopFunds(byCategory)
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [inputs, lookup])
+    if (allReturns.length === 0) return
+
+    const byCategory = new Map<string, FundReturn[]>()
+    allReturns.forEach((r) => {
+      const fundInfo = lookup.get(r.fund_code)
+      if (!fundInfo) return
+      const cat = fundInfo.category
+      const arr = byCategory.get(cat) || []
+      arr.push(r)
+      byCategory.set(cat, arr)
+    })
+    // Sort each category by USD return, keep top 5
+    byCategory.forEach((funds, cat) => {
+      funds.sort((a, b) => (b.usd_return ?? 0) - (a.usd_return ?? 0))
+      byCategory.set(cat, funds.slice(0, 5))
+    })
+    setTopFunds(byCategory)
+  }, [inputs, lookup, allReturns])
 
   const recommended = results.filter((r) => r.score >= 55)
   const avoid = results.filter((r) => r.score < 35)
@@ -94,6 +102,12 @@ export function MacroRecommender() {
           ))}
         </div>
       </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
+          {error}
+        </div>
+      )}
 
       {/* Category Scores */}
       <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
