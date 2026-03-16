@@ -46,6 +46,7 @@ interface RawReturn {
 interface FundReturn {
   code: string
   name: string
+  category: string
   tryReturn: number
   usdReturn: number
   goldReturn: number
@@ -75,10 +76,11 @@ export function TopFundsTable() {
   const codes = rawData.map((r) => r.code)
   const nameMap = useFundBatchLookup(codes)
 
-  // Build display data with names
+  // Build display data with names and categories
   const data: FundReturn[] = rawData.map((r) => ({
     ...r,
     name: nameMap.get(r.code)?.name || r.code,
+    category: nameMap.get(r.code)?.category || '',
   }))
 
   // Fetch inflation rate for current benchmark + period
@@ -174,7 +176,7 @@ export function TopFundsTable() {
   }
 
   const filtered = besOnly
-    ? data.filter((f) => isBESFund(f.name))
+    ? data.filter((f) => isBESFund(f.name, f.category))
     : data
 
   const sorted = [...filtered]

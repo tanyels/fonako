@@ -11,8 +11,9 @@ export const INFLATION_CACHE_TTL = 60 * 60 * 1000 // 1 hour
 export const FALLBACK_TR_INFLATION = 44.4
 export const FALLBACK_US_INFLATION = 2.8
 
-// BES fund detection
-export function isBESFund(name: string): boolean {
+// BES fund detection — checks category first, falls back to name
+export function isBESFund(name: string, category?: string): boolean {
+  if (category === 'Emeklilik') return true
   const upper = name.toUpperCase()
   return upper.includes('EMEKLİLİK') || upper.includes('EMEKLILIK')
 }

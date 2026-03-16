@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
   }
 
   if (besOnly) {
-    results = results.filter((f) => isBESFund(f.name))
+    results = results.filter((f) => isBESFund(f.name, f.category))
   }
 
   if (q) {

@@ -84,7 +84,7 @@ export function BESProviderRankings() {
       const info = nameMap.get(r.fund_code)
       if (!info) continue
 
-      const isBES = isBESFund(info.name) || info.category === 'Emeklilik'
+      const isBES = isBESFund(info.name, info.category)
       if (!isBES) continue
 
       const manager = info.manager || 'Bilinmeyen'
