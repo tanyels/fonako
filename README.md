@@ -1,4 +1,4 @@
-# Göstergeç
+# Fonako
 
 Türk yatırım fonlarının USD, EUR ve altın bazında gerçek performansını gösteren araç.
 
@@ -9,7 +9,7 @@ A tool to show the real performance of Turkish investment funds against USD, EUR
 ### 1. Install dependencies
 
 ```bash
-cd gostergec
+cd fonako
 npm install
 ```
 
