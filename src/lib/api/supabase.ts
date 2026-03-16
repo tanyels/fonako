@@ -120,6 +120,7 @@ export async function getAllFundReturns(): Promise<FundReturn[]> {
     const { data, error } = await supabase
       .from('fund_returns')
       .select('*')
+      .order('fund_code', { ascending: true })
       .range(from, from + batchSize - 1)
 
     if (error) throw error
@@ -182,6 +183,7 @@ async function fetchFundDetails(): Promise<FundDetailRow[]> {
     const { data, error } = await supabase
       .from('fund_details')
       .select('fund_code, market_cap, investor_count, asset_allocation')
+      .order('fund_code', { ascending: true })
       .range(from, from + batchSize - 1)
 
     if (error) {

@@ -60,6 +60,10 @@ function deriveExtended(
   results: RealReturns,
   amount: number
 ): ExtendedValues {
+  // Fallback: simulate ~30% annual TL depreciation so start and end rates differ
+  const fallbackStartUsdRate = FALLBACK_USD_TRY / 1.3 // rate 1 year ago (lower)
+  const fallbackStartGoldRate = FALLBACK_GOLD_TRY_GRAM / 1.4
+
   // Use the USD end value from results if available, fall back to formula
   const endValueUsd =
     results.endValueUsd != null
@@ -67,8 +71,8 @@ function deriveExtended(
       : (1 + results.tryReturn / 100) * amount / FALLBACK_USD_TRY
 
   // Approximations using fallback exchange rates when not directly available
-  const startValueUsd = amount / FALLBACK_USD_TRY
-  const startValueGold = amount / FALLBACK_GOLD_TRY_GRAM
+  const startValueUsd = amount / fallbackStartUsdRate
+  const startValueGold = amount / fallbackStartGoldRate
   const endValueGold = (1 + results.tryReturn / 100) * amount / FALLBACK_GOLD_TRY_GRAM
 
   return { startValueUsd, endValueUsd, startValueGold, endValueGold }
@@ -652,9 +656,9 @@ export function HeroVisual() {
   const ext = results
     ? deriveExtended(results, amount)
     : {
-        startValueUsd: amount / FALLBACK_USD_TRY,
+        startValueUsd: amount / (FALLBACK_USD_TRY / 1.3),
         endValueUsd: (1 + 0.67) * amount / FALLBACK_USD_TRY,
-        startValueGold: amount / FALLBACK_GOLD_TRY_GRAM,
+        startValueGold: amount / (FALLBACK_GOLD_TRY_GRAM / 1.4),
         endValueGold: (1 + 0.67) * amount / FALLBACK_GOLD_TRY_GRAM,
       }
 

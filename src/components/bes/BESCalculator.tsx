@@ -72,8 +72,9 @@ export function BESCalculator() {
       },
       totalValueTL,
       totalValueUSD,
-      totalReturnTL: ((totalValueTL / totalInvested) - 1) * 100,
-      totalReturnUSD: ((totalValueUSD / totalInvested) - 1) * 100,
+      // ROI based on user's own contribution (not including gov match) to show true leverage benefit
+      totalReturnTL: totalContribution > 0 ? ((totalValueTL / totalContribution) - 1) * 100 : 0,
+      totalReturnUSD: totalContribution > 0 ? ((totalValueUSD / totalContribution) - 1) * 100 : 0,
     })
   }
 

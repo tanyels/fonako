@@ -77,7 +77,8 @@ export function runMonteCarlo(
     for (let m = 0; m < durationMonths; m++) {
       portfolio += monthlyInvestment
       const randomReturn = mean + std * boxMuller()
-      portfolio *= 1 + randomReturn
+      const clampedReturn = Math.max(randomReturn, -0.99)
+      portfolio *= 1 + clampedReturn
       path.push(portfolio)
     }
 

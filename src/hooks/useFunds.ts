@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { getAllFunds, type Fund } from '@/lib/api/supabase'
 import { useTefasFilter } from '@/lib/context/TefasFilterContext'
 
@@ -40,12 +40,16 @@ export function useFundBatchLookup(overrideIncludeAll?: boolean): {
   }, [])
 
   const shouldFilter = showOnlyTefas && !overrideIncludeAll
-  const lookup = new Map<string, Fund>()
-  allFunds.forEach((f) => {
-    if (!shouldFilter || f.is_tefas) {
-      lookup.set(f.code, f)
-    }
-  })
+
+  const lookup = useMemo(() => {
+    const map = new Map<string, Fund>()
+    allFunds.forEach((f) => {
+      if (!shouldFilter || f.is_tefas) {
+        map.set(f.code, f)
+      }
+    })
+    return map
+  }, [allFunds, shouldFilter])
 
   return { lookup, loading }
 }
@@ -68,7 +72,10 @@ export function useFundLookup(overrideIncludeAll?: boolean): {
   }, [])
 
   const shouldFilter = showOnlyTefas && !overrideIncludeAll
-  const funds = shouldFilter ? allFunds.filter((f) => f.is_tefas) : allFunds
+
+  const funds = useMemo(() => {
+    return shouldFilter ? allFunds.filter((f) => f.is_tefas) : allFunds
+  }, [allFunds, shouldFilter])
 
   return { funds, loading }
 }
