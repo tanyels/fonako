@@ -79,10 +79,10 @@ export function FundMeltCounter({
 
   return (
     <div ref={containerRef}>
-      <h3 className="text-lg font-bold text-slate-800 mb-1">Gerçek Sonuç</h3>
+      <h3 className="text-lg font-bold text-heading mb-1">Gerçek Sonuç</h3>
 
       {/* Inline sentence: "Tam 1 yıl önce [FON] fonuna [10.000] ₺ yatırdınız." */}
-      <div className="flex items-baseline gap-1.5 mb-4 flex-wrap text-sm text-slate-600 font-medium">
+      <div className="flex items-baseline gap-1.5 mb-4 flex-wrap text-sm text-body font-medium">
         <span>Tam 1 yıl önce</span>
         <div className="inline-block min-w-[200px]">
           <FundSearch
@@ -107,14 +107,14 @@ export function FundMeltCounter({
               onAmountChange?.(val)
             }
           }}
-          className="w-28 border border-slate-300 rounded px-2 py-0.5 text-sm font-bold text-slate-800 bg-white focus:ring-2 focus:ring-slate-400 focus:border-slate-400 text-center"
+          className="w-28 border border-border-strong rounded px-2 py-0.5 text-sm font-bold text-heading bg-surface focus:ring-2 focus:ring-slate-400 focus:border-slate-400 text-center"
         />
         <span>₺ yatırdınız.</span>
       </div>
 
       {/* Comparison table */}
       <div
-        className="border border-slate-200 rounded-lg overflow-hidden transition-all duration-500"
+        className="border border-border-default rounded-lg overflow-hidden transition-all duration-500"
         style={{
           opacity: isVisible ? 1 : 0,
           transform: isVisible ? 'translateY(0)' : 'translateY(10px)',
@@ -122,7 +122,7 @@ export function FundMeltCounter({
       >
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-slate-100 text-slate-600">
+            <tr className="bg-surface-inset text-body">
               <th className="text-left px-3 py-2 font-semibold">Birim</th>
               <th className="text-right px-3 py-2 font-semibold">Başlangıç</th>
               <th className="text-right px-3 py-2 font-semibold">Bugün</th>
@@ -140,9 +140,9 @@ export function FundMeltCounter({
                 key={row.label}
                 className={row.profit >= 0 ? 'bg-emerald-50' : 'bg-red-50'}
               >
-                <td className="px-3 py-2 font-medium text-slate-700">{row.label}</td>
-                <td className="px-3 py-2 text-right text-slate-600">{row.start}</td>
-                <td className="px-3 py-2 text-right font-semibold text-slate-800">{row.end}</td>
+                <td className="px-3 py-2 font-medium text-body">{row.label}</td>
+                <td className="px-3 py-2 text-right text-body">{row.start}</td>
+                <td className="px-3 py-2 text-right font-semibold text-heading">{row.end}</td>
                 <td className={`px-3 py-2 text-right font-bold ${row.profit >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>
                   {row.diff}
                 </td>

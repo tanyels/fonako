@@ -116,15 +116,15 @@ export function FundAnalyzer() {
           />
         </div>
 
-        <div className="flex rounded-lg border border-slate-300 overflow-hidden">
+        <div className="flex rounded-lg border border-border-strong overflow-hidden">
           {PERIODS.map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
               className={`px-4 py-2 text-sm font-medium ${
                 period === p
-                  ? 'bg-slate-800 text-white'
-                  : 'bg-white text-slate-600 hover:bg-slate-100'
+                  ? 'bg-heading text-surface'
+                  : 'bg-surface text-body hover:bg-surface-inset'
               }`}
             >
               {p}
@@ -139,8 +139,8 @@ export function FundAnalyzer() {
           onClick={() => { setCategory('all'); setBesOnly(false) }}
           className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
             category === 'all' && !besOnly
-              ? 'bg-slate-800 text-white'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              ? 'bg-heading text-surface'
+              : 'bg-surface-inset text-body hover:bg-surface-inset'
           }`}
         >
           Tümü
@@ -151,20 +151,20 @@ export function FundAnalyzer() {
             onClick={() => { setCategory(cat); setBesOnly(false) }}
             className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
               category === cat
-                ? 'bg-slate-800 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-heading text-surface'
+                : 'bg-surface-inset text-body hover:bg-surface-inset'
             }`}
           >
             {cat}
           </button>
         ))}
-        <span className="w-px h-5 bg-slate-300 mx-1" />
+        <span className="w-px h-5 bg-border-strong mx-1" />
         <button
           onClick={() => { setBesOnly(!besOnly); setCategory('all') }}
           className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
             besOnly
               ? 'bg-amber-600 text-white'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              : 'bg-surface-inset text-body hover:bg-surface-inset'
           }`}
         >
           Sadece BES
@@ -173,21 +173,21 @@ export function FundAnalyzer() {
 
       {/* Fund Info */}
       {fund && (
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+        <div className="bg-surface border border-border-default rounded-xl p-6 shadow-sm">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-slate-800">{fund.name}</h2>
-              <p className="text-slate-500 font-medium">{fund.code} · {fund.category}</p>
+              <h2 className="text-2xl font-bold text-heading">{fund.name}</h2>
+              <p className="text-muted font-medium">{fund.code} · {fund.category}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-slate-500 font-medium">Son {PERIOD_LABELS[period]}</p>
+              <p className="text-sm text-muted font-medium">Son {PERIOD_LABELS[period]}</p>
             </div>
           </div>
 
           <FundDetailsPanel fundCode={fund.code} />
 
           {loading && (
-            <div className="text-center py-8 text-slate-400 animate-pulse">
+            <div className="text-center py-8 text-subtle animate-pulse">
               Yükleniyor...
             </div>
           )}
@@ -235,7 +235,7 @@ export function FundAnalyzer() {
           )}
 
           {!loading && !hasReturns && selectedFund && (
-            <div className="text-center py-6 text-slate-400 text-sm">
+            <div className="text-center py-6 text-subtle text-sm">
               Bu dönem için veri bulunamadı.
             </div>
           )}
@@ -275,7 +275,7 @@ export function FundAnalyzer() {
       )}
 
       {!fund && !selectedFund && (
-        <div className="text-center py-16 text-slate-500 font-medium">
+        <div className="text-center py-16 text-muted font-medium">
           Analiz için bir fon seçin
         </div>
       )}
@@ -297,12 +297,12 @@ function ReturnCard({
   const isPositive = value >= 0
 
   return (
-    <div className={`p-4 rounded-lg ${highlight ? 'bg-slate-100 ring-2 ring-slate-300' : 'bg-slate-50'}`}>
-      <p className="text-sm font-medium text-slate-600">{label}</p>
+    <div className={`p-4 rounded-lg ${highlight ? 'bg-surface-inset ring-2 ring-slate-300' : 'bg-surface-raised'}`}>
+      <p className="text-sm font-medium text-body">{label}</p>
       <p className={`text-2xl font-bold ${isPositive ? 'text-emerald-600' : 'text-red-600'}`}>
         {isPositive ? '+' : ''}{value.toFixed(1)}%
       </p>
-      <p className="text-xs text-slate-500 font-medium">{sublabel}</p>
+      <p className="text-xs text-muted font-medium">{sublabel}</p>
     </div>
   )
 }

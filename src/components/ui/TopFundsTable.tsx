@@ -193,7 +193,7 @@ export function TopFundsTable() {
     return (
       <div className="animate-pulse space-y-2">
         {Array.from({ length: 10 }).map((_, i) => (
-          <div key={i} className="h-8 bg-slate-100 rounded" />
+          <div key={i} className="h-8 bg-surface-inset rounded" />
         ))}
       </div>
     )
@@ -203,7 +203,7 @@ export function TopFundsTable() {
     return (
       <div className="text-center py-8">
         <p className="text-red-600 text-sm mb-3">Veri yüklenirken hata oluştu.</p>
-        <button onClick={loadTopFunds} className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition text-sm font-medium" aria-label="Veriyi yeniden yükle">
+        <button onClick={loadTopFunds} className="px-4 py-2 bg-heading text-surface rounded-lg hover:opacity-90 transition text-sm font-medium" aria-label="Veriyi yeniden yükle">
           Tekrar Dene
         </button>
       </div>
@@ -213,11 +213,11 @@ export function TopFundsTable() {
   return (
     <div className="overflow-hidden">
       {/* Title with benchmark dropdown */}
-      <h3 className="text-sm font-bold text-slate-800 mb-1 leading-snug">
+      <h3 className="text-sm font-bold text-heading mb-1 leading-snug">
         <div className="relative inline-block" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm transition border border-slate-200"
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-inset hover:bg-surface-inset text-heading font-bold text-sm transition border border-border-default"
             aria-label="Enflasyon göstergesi seç"
             aria-expanded={dropdownOpen}
           >
@@ -227,15 +227,15 @@ export function TopFundsTable() {
             </svg>
           </button>
           {dropdownOpen && (
-            <div className="absolute left-0 top-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-20 min-w-[180px]">
+            <div className="absolute left-0 top-full mt-1 bg-surface border border-border-default rounded-lg shadow-lg z-20 min-w-[180px]">
               {BENCHMARKS.map((b) => (
                 <button
                   key={b.key}
                   onClick={() => { setBenchmark(b.key); setDropdownOpen(false) }}
-                  className={`w-full text-left px-3 py-2 hover:bg-slate-100 transition first:rounded-t-lg last:rounded-b-lg ${benchmark === b.key ? 'bg-slate-50 font-semibold' : ''}`}
+                  className={`w-full text-left px-3 py-2 hover:bg-surface-inset transition first:rounded-t-lg last:rounded-b-lg ${benchmark === b.key ? 'bg-surface-raised font-semibold' : ''}`}
                 >
-                  <span className="text-sm font-medium text-slate-800">{b.label}</span>
-                  <span className="block text-[10px] text-slate-400">{getBenchmarkDescription(b)}</span>
+                  <span className="text-sm font-medium text-heading">{b.label}</span>
+                  <span className="block text-[10px] text-subtle">{getBenchmarkDescription(b)}</span>
                 </button>
               ))}
             </div>
@@ -254,8 +254,8 @@ export function TopFundsTable() {
             onClick={() => setPeriod(p.key)}
             className={`px-2.5 py-1 text-xs font-medium rounded-full transition ${
               period === p.key
-                ? 'bg-slate-800 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-heading text-surface'
+                : 'bg-surface-inset text-body hover:bg-surface-inset'
             }`}
             aria-label={`${p.label} dönemini seç`}
             aria-pressed={period === p.key}
@@ -265,12 +265,12 @@ export function TopFundsTable() {
         ))}
       </div>
 
-      <label className="flex items-center gap-1.5 text-xs text-slate-500 mb-4 cursor-pointer select-none">
+      <label className="flex items-center gap-1.5 text-xs text-muted mb-4 cursor-pointer select-none">
         <input
           type="checkbox"
           checked={besOnly}
           onChange={(e) => setBesOnly(e.target.checked)}
-          className="rounded border-slate-300 text-slate-700 focus:ring-slate-500 w-3.5 h-3.5"
+          className="rounded border-border-strong text-body focus:ring-slate-500 w-3.5 h-3.5"
           aria-label="Sadece BES fonlarını göster"
         />
         Sadece BES fonları
@@ -278,17 +278,17 @@ export function TopFundsTable() {
 
       {/* Effective rate indicator */}
       {inflationRate !== null && benchmark !== 'nominal' && (
-        <div className="text-[10px] text-slate-400 mb-2">
+        <div className="text-[10px] text-subtle mb-2">
           {currentBenchmark.label}: son {currentPeriod.label} toplam %{inflationRate.toFixed(1)} enflasyon
         </div>
       )}
 
       <table className="w-full text-xs">
         <thead>
-          <tr className="border-b border-slate-200">
-            <th className="text-left py-2 px-1 text-xs font-semibold text-slate-500 w-6">#</th>
-            <th className="text-left py-2 px-1 text-xs font-semibold text-slate-500">Fon</th>
-            <SortHeader label="TL" col="try" current={sortCol} arrow={arrow} onClick={handleSort} color="text-slate-600" />
+          <tr className="border-b border-border-default">
+            <th className="text-left py-2 px-1 text-xs font-semibold text-muted w-6">#</th>
+            <th className="text-left py-2 px-1 text-xs font-semibold text-muted">Fon</th>
+            <SortHeader label="TL" col="try" current={sortCol} arrow={arrow} onClick={handleSort} color="text-body" />
             <SortHeader label="Altın" col="gold" current={sortCol} arrow={arrow} onClick={handleSort} color="text-amber-600" />
             <SortHeader label="USD" col="usd" current={sortCol} arrow={arrow} onClick={handleSort} color="text-blue-600" />
           </tr>
@@ -297,11 +297,11 @@ export function TopFundsTable() {
           {sorted.map((fund, i) => (
             <tr
               key={fund.code}
-              className="border-b border-slate-100 hover:bg-slate-50 transition group"
+              className="border-b border-border-default hover:bg-surface-raised transition group"
             >
-              <td className="py-2 px-1 text-slate-400 font-medium">{i + 1}</td>
+              <td className="py-2 px-1 text-subtle font-medium">{i + 1}</td>
               <td className="py-2 px-1 relative">
-                <span className="font-semibold text-slate-800 cursor-default">{fund.code}</span>
+                <span className="font-semibold text-heading cursor-default">{fund.code}</span>
                 <div className="absolute left-0 bottom-full mb-1 hidden group-hover:block z-10 bg-slate-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap shadow-lg">
                   {fund.name}
                 </div>
@@ -341,7 +341,7 @@ function SortHeader({
   const active = current === col
   return (
     <th
-      className={`text-right py-2 px-1 text-xs font-semibold cursor-pointer select-none hover:bg-slate-100 transition rounded ${active ? color : 'text-slate-500'}`}
+      className={`text-right py-2 px-1 text-xs font-semibold cursor-pointer select-none hover:bg-surface-inset transition rounded ${active ? color : 'text-muted'}`}
       onClick={() => onClick(col)}
       aria-label={`${label} sütununa göre sırala`}
       role="button"

@@ -58,22 +58,22 @@ export function IllusionBarChart({
     <div ref={containerRef}>
       {/* Headline: nominal TL return */}
       <div className="text-center mb-5">
-        <p className="text-sm text-slate-500 mb-1">
+        <p className="text-sm text-muted mb-1">
           {fundName ? `${fundName}` : 'Bir fon seçin'}
         </p>
-        <p className="text-slate-700">
+        <p className="text-body">
           Fonunuz TL olarak <span className="font-bold text-emerald-600 text-lg">%{tlReturn.toFixed(1)}</span> getirdi diye düşünebilirsiniz.
         </p>
-        <p className="text-slate-700 mt-1">
+        <p className="text-body mt-1">
           Ama aslında <span className="font-semibold">gerçekten kazandınız mı?</span>
         </p>
       </div>
 
-      <div className="border-t border-dashed border-slate-200 mb-4" />
+      <div className="border-t border-dashed border-border-default mb-4" />
 
       {/* Real returns */}
-      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Reel Getiri</p>
-      <p className="text-[10px] text-slate-400 mb-3">TL → TÜFE %{trInflation.toFixed(0)} · USD → CPI %{usInflation.toFixed(0)}</p>
+      <p className="text-xs font-semibold text-muted uppercase tracking-wide mb-1">Reel Getiri</p>
+      <p className="text-[10px] text-subtle mb-3">TL → TÜFE %{trInflation.toFixed(0)} · USD → CPI %{usInflation.toFixed(0)}</p>
 
       <div className="flex justify-center gap-6 sm:gap-10">
         <BarColumn value={tlRealReturn} maxAbs={realMax} format={fmt} isVisible={isVisible} delay={0} label="TL Reel" subtitle="(TÜİK enflasyonuna göre)" color="emerald" />
@@ -134,7 +134,7 @@ function BarColumn({
       {!positive && <div className="h-6" />}
 
       <div className="relative w-full" style={{ height: 100 }}>
-        <div className="absolute left-0 right-0 top-1/2 -translate-y-px border-t border-dashed border-slate-300" />
+        <div className="absolute left-0 right-0 top-1/2 -translate-y-px border-t border-dashed border-border-strong" />
 
         <div className="absolute top-0 left-0 right-0 flex items-end justify-center" style={{ height: '50%' }}>
           {positive && (
@@ -180,8 +180,8 @@ function BarColumn({
       )}
       {positive && <div className="h-6" />}
 
-      <p className="text-xs font-semibold text-slate-600 mt-1">{label}</p>
-      {subtitle && <p className="text-[9px] text-slate-400 leading-tight">{subtitle}</p>}
+      <p className="text-xs font-semibold text-body mt-1">{label}</p>
+      {subtitle && <p className="text-[9px] text-subtle leading-tight">{subtitle}</p>}
     </div>
   )
 }

@@ -29,10 +29,10 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return this.props.fallback || (
         <div className="flex flex-col items-center justify-center py-20 px-4">
-          <p className="text-slate-600 mb-4">Bir şeyler ters gitti.</p>
+          <p className="text-body mb-4">Bir şeyler ters gitti.</p>
           <button
             onClick={() => this.setState({ hasError: false })}
-            className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition text-sm font-medium"
+            className="px-4 py-2 bg-heading text-surface rounded-lg hover:opacity-90 transition text-sm font-medium"
           >
             Tekrar Dene
           </button>

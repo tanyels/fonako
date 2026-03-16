@@ -64,11 +64,11 @@ export function BESCalculator() {
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+    <div className="bg-surface border border-border-default rounded-xl p-6 shadow-sm">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {/* Fund Selection */}
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-slate-600 mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             BES Fonu / Pension Fund
           </label>
           <FundSearch
@@ -81,14 +81,14 @@ export function BESCalculator() {
 
         {/* Monthly Contribution */}
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             Aylık Katkı (₺)
           </label>
           <input
             type="number"
             value={monthlyAmount}
             onChange={(e) => setMonthlyAmount(e.target.value)}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-700"
+            className="w-full border border-border-strong rounded-lg px-3 py-2 text-body"
             placeholder="1000"
             aria-label="Aylık katkı tutarı"
           />
@@ -96,14 +96,14 @@ export function BESCalculator() {
 
         {/* Start Date */}
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             Başlangıç / Start
           </label>
           <input
             type="month"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-700"
+            className="w-full border border-border-strong rounded-lg px-3 py-2 text-body"
             aria-label="Başlangıç tarihi"
           />
         </div>
@@ -112,7 +112,7 @@ export function BESCalculator() {
       <button
         onClick={handleCalculate}
         disabled={!fundCode || calculating}
-        className="w-full md:w-auto bg-slate-800 text-white py-2 px-6 rounded-lg hover:bg-slate-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full md:w-auto bg-heading text-surface py-2 px-6 rounded-lg hover:opacity-90 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         aria-label="BES getirisi hesapla"
       >
         {calculating ? 'Hesaplanıyor...' : 'Hesapla / Calculate'}
@@ -183,7 +183,7 @@ export function BESCalculator() {
           </div>
 
           {fund && (
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted">
               * Hesaplama {fund.name} ({fundCode}) fonu için yapılmıştır. Aylık DCA (düzenli alım) yöntemiyle hesaplanmıştır.
             </p>
           )}
@@ -208,18 +208,18 @@ function ResultCard({
     ? 'bg-emerald-50 border-emerald-200'
     : highlight === 'red'
     ? 'bg-red-50 border-red-200'
-    : 'bg-slate-50 border-slate-200'
+    : 'bg-surface-raised border-border-default'
 
   const valueClass = highlight === 'green'
     ? 'text-emerald-600'
     : highlight === 'red'
     ? 'text-red-600'
-    : 'text-slate-800'
+    : 'text-heading'
 
   return (
     <div className={`p-4 rounded-lg border ${bgClass}`}>
-      <p className="text-sm font-medium text-slate-600">{label}</p>
-      <p className="text-xs text-slate-500">{sublabel}</p>
+      <p className="text-sm font-medium text-body">{label}</p>
+      <p className="text-xs text-muted">{sublabel}</p>
       <p className={`text-2xl font-bold mt-1 ${valueClass}`}>{value}</p>
     </div>
   )

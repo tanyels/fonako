@@ -10,13 +10,13 @@ export default function BESPage() {
     <div className="container mx-auto px-4 py-8">
       {/* Hero */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-800 mb-2">
+        <h1 className="text-3xl font-bold text-heading mb-2">
           BES Analizi
         </h1>
-        <p className="text-slate-600">
+        <p className="text-body">
           Bireysel Emeklilik Sistemi fonlarınızın gerçek performansını görün
         </p>
-        <p className="text-slate-500 text-sm mt-1">
+        <p className="text-muted text-sm mt-1">
           See the real performance of your pension funds in USD, EUR, and gold
         </p>
       </div>
@@ -33,7 +33,7 @@ export default function BESPage() {
 
       {/* Section A & B: BES Calculator */}
       <section className="mb-12">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">
+        <h2 className="text-2xl font-bold text-heading mb-4">
           BES Hesaplayıcı / Pension Calculator
         </h2>
         <BESCalculator />
@@ -41,7 +41,7 @@ export default function BESPage() {
 
       {/* Section C: Devlet Katkısı Reality Check */}
       <section className="mb-12">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">
+        <h2 className="text-2xl font-bold text-heading mb-4">
           Devlet Katkısı Gerçeği / Government Match Reality
         </h2>
         <DevletKatkisi />
@@ -49,7 +49,7 @@ export default function BESPage() {
 
       {/* Section D: BES vs Regular Fund */}
       <section className="mb-12">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">
+        <h2 className="text-2xl font-bold text-heading mb-4">
           BES vs Normal Fon / Pension vs Regular Fund
         </h2>
         <BESvsRegularFund />
@@ -57,7 +57,7 @@ export default function BESPage() {
 
       {/* Section E: Provider Rankings */}
       <section className="mb-12">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">
+        <h2 className="text-2xl font-bold text-heading mb-4">
           Şirket Sıralaması / Provider Rankings
         </h2>
         <BESProviderRankings />
@@ -65,7 +65,7 @@ export default function BESPage() {
 
       {/* Section F: Withdrawal Calculator */}
       <section className="mb-12">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">
+        <h2 className="text-2xl font-bold text-heading mb-4">
           Çıkış Hesaplayıcı / Withdrawal Calculator
         </h2>
         <WithdrawalCalculator />
@@ -73,7 +73,7 @@ export default function BESPage() {
 
       {/* Section G: Age-Based Recommendations */}
       <section className="mb-12">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">
+        <h2 className="text-2xl font-bold text-heading mb-4">
           Yaşa Göre Öneriler / Age-Based Recommendations
         </h2>
         <AgeRecommendations />

@@ -192,7 +192,7 @@ export function ComparisonChart({ fundCode, benchmark, startDate, amount }: Comp
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full text-slate-400 animate-pulse">
+      <div className="flex items-center justify-center h-full text-subtle animate-pulse">
         Grafik yükleniyor...
       </div>
     )
@@ -200,7 +200,7 @@ export function ComparisonChart({ fundCode, benchmark, startDate, amount }: Comp
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-slate-400">
+      <div className="flex items-center justify-center h-full text-subtle">
         Bu dönem için yeterli veri yok
       </div>
     )
@@ -216,7 +216,7 @@ export function ComparisonChart({ fundCode, benchmark, startDate, amount }: Comp
   return (
     <ResponsiveContainer width="100%" height="100%">
       <AreaChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" />
         <XAxis
           dataKey="date"
           tick={{ fontSize: 12 }}
@@ -229,9 +229,10 @@ export function ComparisonChart({ fundCode, benchmark, startDate, amount }: Comp
         />
         <Tooltip
           contentStyle={{
-            backgroundColor: '#fff',
-            border: '1px solid #e5e7eb',
+            backgroundColor: 'var(--surface)',
+            border: '1px solid var(--border-default)',
             borderRadius: '8px',
+            color: 'var(--body)',
           }}
           formatter={(value: number) => [
             `${value.toLocaleString('tr-TR')} ₺`,

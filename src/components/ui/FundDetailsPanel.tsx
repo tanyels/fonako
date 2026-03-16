@@ -79,7 +79,7 @@ export function FundDetailsPanel({ fundCode }: { fundCode: string }) {
 
   if (loading) {
     return (
-      <div className="text-sm text-slate-400 animate-pulse py-4">
+      <div className="text-sm text-subtle animate-pulse py-4">
         Fon detayları yükleniyor...
       </div>
     )
@@ -103,25 +103,25 @@ export function FundDetailsPanel({ fundCode }: { fundCode: string }) {
       {/* Info cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {details.market_cap != null && (
-          <div className="bg-slate-50 rounded-lg p-4">
-            <p className="text-xs font-medium text-slate-500">Fon Büyüklüğü</p>
-            <p className="text-lg font-bold text-slate-800">
+          <div className="bg-surface-raised rounded-lg p-4">
+            <p className="text-xs font-medium text-muted">Fon Büyüklüğü</p>
+            <p className="text-lg font-bold text-heading">
               {formatMarketCap(details.market_cap)}
             </p>
           </div>
         )}
         {details.number_of_investors != null && (
-          <div className="bg-slate-50 rounded-lg p-4">
-            <p className="text-xs font-medium text-slate-500">Yatırımcı Sayısı</p>
-            <p className="text-lg font-bold text-slate-800">
+          <div className="bg-surface-raised rounded-lg p-4">
+            <p className="text-xs font-medium text-muted">Yatırımcı Sayısı</p>
+            <p className="text-lg font-bold text-heading">
               {formatNumber(details.number_of_investors)}
             </p>
           </div>
         )}
         {details.number_of_shares != null && (
-          <div className="bg-slate-50 rounded-lg p-4">
-            <p className="text-xs font-medium text-slate-500">Pay Sayısı</p>
-            <p className="text-lg font-bold text-slate-800">
+          <div className="bg-surface-raised rounded-lg p-4">
+            <p className="text-xs font-medium text-muted">Pay Sayısı</p>
+            <p className="text-lg font-bold text-heading">
               {formatNumber(Math.round(details.number_of_shares))}
             </p>
           </div>
@@ -131,7 +131,7 @@ export function FundDetailsPanel({ fundCode }: { fundCode: string }) {
       {/* Asset allocation */}
       {allocations.length > 0 && (
         <div>
-          <p className="text-xs font-medium text-slate-500 mb-2">Varlık Dağılımı</p>
+          <p className="text-xs font-medium text-muted mb-2">Varlık Dağılımı</p>
 
           {/* Stacked bar */}
           <div className="flex h-4 rounded-full overflow-hidden mb-3">
@@ -152,10 +152,10 @@ export function FundDetailsPanel({ fundCode }: { fundCode: string }) {
                 <span
                   className={`w-2.5 h-2.5 rounded-sm ${BAR_COLORS[i % BAR_COLORS.length]}`}
                 />
-                <span className="text-slate-600">
+                <span className="text-body">
                   {ALLOCATION_LABELS[key] || key}
                 </span>
-                <span className="font-medium text-slate-800">
+                <span className="font-medium text-heading">
                   %{value.toFixed(1)}
                 </span>
               </div>
@@ -164,7 +164,7 @@ export function FundDetailsPanel({ fundCode }: { fundCode: string }) {
         </div>
       )}
 
-      <p className="text-xs text-slate-400">Son güncelleme: {updatedDate}</p>
+      <p className="text-xs text-subtle">Son güncelleme: {updatedDate}</p>
     </div>
   )
 }

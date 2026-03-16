@@ -118,7 +118,7 @@ export function SimilarFundsTable({ fundCode }: { fundCode: string }) {
 
   return (
     <div className="mt-8">
-      <h3 className="text-lg font-bold text-slate-800 mb-3">Benzer Fonlar Sıralaması</h3>
+      <h3 className="text-lg font-bold text-heading mb-3">Benzer Fonlar Sıralaması</h3>
 
       {/* Tag pills */}
       <div className="flex flex-wrap gap-1.5 mb-4">
@@ -130,8 +130,8 @@ export function SimilarFundsTable({ fundCode }: { fundCode: string }) {
               onClick={() => toggleTag(tag)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
                 active
-                  ? 'bg-slate-800 text-white'
-                  : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'
+                  ? 'bg-heading text-surface'
+                  : 'bg-surface-inset text-subtle hover:bg-surface-inset hover:text-body'
               }`}
             >
               {tag}
@@ -141,33 +141,33 @@ export function SimilarFundsTable({ fundCode }: { fundCode: string }) {
       </div>
 
       {activeTags.length === 0 && (
-        <p className="text-sm text-slate-400">En az bir etiket seçin.</p>
+        <p className="text-sm text-subtle">En az bir etiket seçin.</p>
       )}
 
       {activeTags.length > 0 && loading && (
         <div className="animate-pulse space-y-2">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-8 bg-slate-100 rounded" />
+            <div key={i} className="h-8 bg-surface-inset rounded" />
           ))}
         </div>
       )}
 
       {activeTags.length > 0 && !loading && (
         <>
-          <p className="text-xs text-slate-400 mb-2">
+          <p className="text-xs text-subtle mb-2">
             {sorted.length} benzer fon bulundu (1Y getiri)
           </p>
 
           {sorted.length === 0 ? (
-            <p className="text-sm text-slate-400">Eşleşen fon bulunamadı.</p>
+            <p className="text-sm text-subtle">Eşleşen fon bulunamadı.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="text-left py-2 px-1 text-xs font-semibold text-slate-500 w-6">#</th>
-                    <th className="text-left py-2 px-1 text-xs font-semibold text-slate-500">Fon</th>
-                    <SortHeader label="TL" col="try" current={sortCol} arrow={arrow} onClick={handleSort} color="text-slate-600" />
+                  <tr className="border-b border-border-default">
+                    <th className="text-left py-2 px-1 text-xs font-semibold text-muted w-6">#</th>
+                    <th className="text-left py-2 px-1 text-xs font-semibold text-muted">Fon</th>
+                    <SortHeader label="TL" col="try" current={sortCol} arrow={arrow} onClick={handleSort} color="text-body" />
                     <SortHeader label="USD" col="usd" current={sortCol} arrow={arrow} onClick={handleSort} color="text-blue-600" />
                     <SortHeader label="Altın" col="gold" current={sortCol} arrow={arrow} onClick={handleSort} color="text-amber-600" />
                   </tr>
@@ -176,11 +176,11 @@ export function SimilarFundsTable({ fundCode }: { fundCode: string }) {
                   {sorted.map((fund, i) => (
                     <tr
                       key={fund.code}
-                      className="border-b border-slate-100 hover:bg-slate-50 transition group"
+                      className="border-b border-border-default hover:bg-surface-raised transition group"
                     >
-                      <td className="py-2 px-1 text-slate-400 font-medium">{i + 1}</td>
+                      <td className="py-2 px-1 text-subtle font-medium">{i + 1}</td>
                       <td className="py-2 px-1 relative">
-                        <span className="font-semibold text-slate-800 cursor-default">{fund.code}</span>
+                        <span className="font-semibold text-heading cursor-default">{fund.code}</span>
                         <div className="absolute left-0 bottom-full mb-1 hidden group-hover:block z-10 bg-slate-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap shadow-lg">
                           {fund.name}
                         </div>
@@ -224,7 +224,7 @@ function SortHeader({
   const active = current === col
   return (
     <th
-      className={`text-right py-2 px-1 text-xs font-semibold cursor-pointer select-none hover:bg-slate-100 transition rounded ${active ? color : 'text-slate-500'}`}
+      className={`text-right py-2 px-1 text-xs font-semibold cursor-pointer select-none hover:bg-surface-inset transition rounded ${active ? color : 'text-muted'}`}
       onClick={() => onClick(col)}
     >
       {label}{arrow(col)}

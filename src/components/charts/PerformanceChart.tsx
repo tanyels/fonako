@@ -148,7 +148,7 @@ export function PerformanceChart({ fundCode, period }: PerformanceChartProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full text-slate-400 animate-pulse">
+      <div className="flex items-center justify-center h-full text-subtle animate-pulse">
         Grafik yükleniyor...
       </div>
     )
@@ -156,7 +156,7 @@ export function PerformanceChart({ fundCode, period }: PerformanceChartProps) {
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-slate-400">
+      <div className="flex items-center justify-center h-full text-subtle">
         Bu dönem için yeterli veri yok
       </div>
     )
@@ -165,7 +165,7 @@ export function PerformanceChart({ fundCode, period }: PerformanceChartProps) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+        <CartesianGrid strokeDasharray="3 3" className="[&>line]:stroke-border-default" stroke="var(--border-default)" />
         <XAxis
           dataKey="date"
           tick={{ fontSize: 12 }}
@@ -179,9 +179,10 @@ export function PerformanceChart({ fundCode, period }: PerformanceChartProps) {
         />
         <Tooltip
           contentStyle={{
-            backgroundColor: '#fff',
-            border: '1px solid #e5e7eb',
+            backgroundColor: 'var(--surface)',
+            border: '1px solid var(--border-default)',
             borderRadius: '8px',
+            color: 'var(--body)',
           }}
           formatter={(value: number, name: string) => [
             `${value.toFixed(1)}`,

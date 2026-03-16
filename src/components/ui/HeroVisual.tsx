@@ -174,11 +174,11 @@ export function HeroVisual() {
   return (
     <section className="w-full py-8">
       {/* Title */}
-      <div className="text-center mb-6">
-        <h1 className="text-4xl font-bold text-slate-800 mb-3">
+      <div className="text-center mb-6 bg-gradient-to-b from-brand-50/50 to-transparent dark:from-brand-950/30 rounded-2xl py-4">
+        <h1 className="text-4xl font-bold text-heading mb-3">
           Fonunuz Gerçekten Kazandırıyor mu?
         </h1>
-        <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+        <p className="text-lg text-muted max-w-2xl mx-auto">
           TL bazlı getiriler yanıltıcı olabilir. Bir fon seçin, gerçek performansı görün.
         </p>
       </div>
@@ -189,8 +189,8 @@ export function HeroVisual() {
           onClick={() => setSelectedCategory('all')}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${
             selectedCategory === 'all'
-              ? 'bg-slate-800 text-white'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              ? 'bg-heading text-surface'
+              : 'bg-surface-inset text-body hover:bg-surface-inset'
           }`}
         >
           Tümü
@@ -201,8 +201,8 @@ export function HeroVisual() {
             onClick={() => setSelectedCategory(cat)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${
               selectedCategory === cat
-                ? 'bg-slate-800 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-heading text-surface'
+                : 'bg-surface-inset text-body hover:bg-surface-inset'
             }`}
           >
             {cat}
@@ -222,19 +222,35 @@ export function HeroVisual() {
               onChange={handleFundChange}
               categoryFilter={selectedCategory === 'all' ? undefined : selectedCategory}
             />
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
+              <span className="text-xs text-subtle font-medium">Popüler:</span>
+              {CANDIDATE_CODES.map((code) => (
+                <button
+                  key={code}
+                  onClick={() => handleFundChange(code)}
+                  className={`px-2.5 py-1 rounded-full text-xs font-medium transition ${
+                    selectedFund === code
+                      ? 'bg-heading text-surface'
+                      : 'bg-surface-inset text-body hover:bg-surface-inset'
+                  }`}
+                >
+                  {code}
+                </button>
+              ))}
+            </div>
             {fund && (
               <div className="mt-2 text-center">
                 <div className="flex flex-wrap justify-center gap-1.5 mb-1">
                   {extractTags(fund.name).map((tag) => (
                     <span
                       key={tag}
-                      className="px-2 py-0.5 text-xs font-medium rounded-full bg-slate-100 text-slate-600 border border-slate-200"
+                      className="px-2 py-0.5 text-xs font-medium rounded-full bg-surface-inset text-body border border-border-default"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-subtle">
                   {fund.manager} · Son 1 yıl
                 </p>
               </div>
@@ -243,13 +259,13 @@ export function HeroVisual() {
 
           {loading && (
             <div className="text-center py-12">
-              <p className="text-slate-400 animate-pulse">Hesaplanıyor...</p>
+              <p className="text-subtle animate-pulse">Hesaplanıyor...</p>
             </div>
           )}
 
           {!loading && (
             <div>
-              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+              <div className="bg-surface border border-border-default rounded-xl p-6 shadow-sm">
                 <IllusionBarChart
                   tlReturn={tlReturn}
                   tlRealReturn={tlRealReturn}
@@ -267,7 +283,7 @@ export function HeroVisual() {
         </div>
 
         {/* RIGHT: Top Funds Leaderboard (1/3 width) */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <div className="bg-surface border border-border-default rounded-xl p-5 shadow-sm">
           <TopFundsTable />
         </div>
 

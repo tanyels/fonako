@@ -137,10 +137,10 @@ export function BESProviderRankings() {
   })
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-      <p className="text-slate-600 mb-6">
+    <div className="bg-surface border border-border-default rounded-xl p-6 shadow-sm">
+      <p className="text-body mb-6">
         Hangi BES şirketinin fonları USD bazında daha iyi performans gösteriyor?
-        <span className="block text-sm text-slate-500 mt-1">
+        <span className="block text-sm text-muted mt-1">
           Which pension company&apos;s funds perform better in USD terms?
         </span>
       </p>
@@ -150,7 +150,7 @@ export function BESProviderRankings() {
         <button
           onClick={() => setSortBy('usd1y')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-            sortBy === 'usd1y' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            sortBy === 'usd1y' ? 'bg-heading text-surface' : 'bg-surface-inset text-body hover:bg-surface-inset'
           }`}
         >
           1Y USD Getiri
@@ -158,7 +158,7 @@ export function BESProviderRankings() {
         <button
           onClick={() => setSortBy('usd2y')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-            sortBy === 'usd2y' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            sortBy === 'usd2y' ? 'bg-heading text-surface' : 'bg-surface-inset text-body hover:bg-surface-inset'
           }`}
         >
           2Y USD Getiri
@@ -166,7 +166,7 @@ export function BESProviderRankings() {
         <button
           onClick={() => setSortBy('count')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-            sortBy === 'count' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            sortBy === 'count' ? 'bg-heading text-surface' : 'bg-surface-inset text-body hover:bg-surface-inset'
           }`}
         >
           Fon Sayısı
@@ -176,62 +176,62 @@ export function BESProviderRankings() {
       {/* Rankings Table */}
       {loading ? (
         <div className="animate-pulse">
-          <div className="h-10 bg-slate-50 rounded mb-2" />
+          <div className="h-10 bg-surface-raised rounded mb-2" />
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="flex gap-4 py-3 border-b border-slate-100">
-              <div className="w-8 h-5 bg-slate-100 rounded" />
+            <div key={i} className="flex gap-4 py-3 border-b border-border-default">
+              <div className="w-8 h-5 bg-surface-inset rounded" />
               <div className="flex items-center gap-3 flex-1">
-                <div className="w-10 h-10 bg-slate-100 rounded-lg" />
+                <div className="w-10 h-10 bg-surface-inset rounded-lg" />
                 <div>
-                  <div className="w-32 h-4 bg-slate-100 rounded mb-1" />
-                  <div className="w-16 h-3 bg-slate-100 rounded" />
+                  <div className="w-32 h-4 bg-surface-inset rounded mb-1" />
+                  <div className="w-16 h-3 bg-surface-inset rounded" />
                 </div>
               </div>
-              <div className="w-16 h-5 bg-slate-100 rounded" />
-              <div className="w-16 h-5 bg-slate-100 rounded" />
-              <div className="w-12 h-5 bg-slate-100 rounded" />
-              <div className="w-32 h-5 bg-slate-100 rounded" />
+              <div className="w-16 h-5 bg-surface-inset rounded" />
+              <div className="w-16 h-5 bg-surface-inset rounded" />
+              <div className="w-12 h-5 bg-surface-inset rounded" />
+              <div className="w-32 h-5 bg-surface-inset rounded" />
             </div>
           ))}
         </div>
       ) : error ? (
         <div className="p-8 text-center">
           <p className="text-red-600 mb-3">Veri yüklenirken hata oluştu.</p>
-          <button onClick={load} className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition text-sm font-medium">
+          <button onClick={load} className="px-4 py-2 bg-heading text-surface rounded-lg hover:opacity-90 transition text-sm font-medium">
             Tekrar Dene
           </button>
         </div>
       ) : sortedProviders.length === 0 ? (
-        <div className="text-center text-slate-500 py-8">BES fon verisi bulunamadı.</div>
+        <div className="text-center text-muted py-8">BES fon verisi bulunamadı.</div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-50">
+            <thead className="bg-surface-raised">
               <tr>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-slate-600">#</th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-slate-600">Şirket</th>
-                <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">USD 1Y</th>
-                <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">USD 2Y</th>
-                <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">Fon Sayısı</th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-slate-600">En İyi Fon</th>
+                <th className="text-left px-4 py-3 text-sm font-semibold text-body">#</th>
+                <th className="text-left px-4 py-3 text-sm font-semibold text-body">Şirket</th>
+                <th className="text-right px-4 py-3 text-sm font-semibold text-body">USD 1Y</th>
+                <th className="text-right px-4 py-3 text-sm font-semibold text-body">USD 2Y</th>
+                <th className="text-right px-4 py-3 text-sm font-semibold text-body">Fon Sayısı</th>
+                <th className="text-left px-4 py-3 text-sm font-semibold text-body">En İyi Fon</th>
               </tr>
             </thead>
             <tbody>
               {sortedProviders.map((provider, index) => (
-                <tr key={provider.name} className="border-b border-slate-100 hover:bg-slate-50">
+                <tr key={provider.name} className="border-b border-border-default hover:bg-surface-raised">
                   <td className="px-4 py-3">
-                    <span className={`font-bold ${index === 0 ? 'text-amber-500' : 'text-slate-400'}`}>
+                    <span className={`font-bold ${index === 0 ? 'text-amber-500' : 'text-subtle'}`}>
                       {index + 1}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-slate-200 rounded-lg flex items-center justify-center text-sm font-bold text-slate-600">
+                      <div className="w-10 h-10 bg-surface-inset rounded-lg flex items-center justify-center text-sm font-bold text-body">
                         {provider.name.substring(0, 2).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-semibold text-slate-800">{provider.name}</p>
-                        <p className="text-xs text-slate-500">{provider.fundCount} fon</p>
+                        <p className="font-semibold text-heading">{provider.name}</p>
+                        <p className="text-xs text-muted">{provider.fundCount} fon</p>
                       </div>
                     </div>
                   </td>
@@ -246,10 +246,10 @@ export function BESProviderRankings() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <span className="font-semibold text-slate-700">{provider.fundCount}</span>
+                    <span className="font-semibold text-body">{provider.fundCount}</span>
                   </td>
                   <td className="px-4 py-3">
-                    <p className="text-sm text-slate-700">{provider.bestFundName}</p>
+                    <p className="text-sm text-body">{provider.bestFundName}</p>
                     <p className={`text-xs font-semibold ${provider.bestFundReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                       {provider.bestFundReturn >= 0 ? '+' : ''}{provider.bestFundReturn.toFixed(1)}% USD
                     </p>
@@ -261,7 +261,7 @@ export function BESProviderRankings() {
         </div>
       )}
 
-      <p className="text-xs text-slate-500 mt-4">
+      <p className="text-xs text-muted mt-4">
         * Ortalama getiriler her şirketin tüm BES fonlarının aritmetik ortalamasıdır.
       </p>
     </div>

@@ -90,17 +90,17 @@ export function AgeRecommendations() {
   const ageGroup = AGE_GROUPS.find(g => g.range === selectedAge) || AGE_GROUPS[1]
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-      <p className="text-slate-600 mb-6">
+    <div className="bg-surface border border-border-default rounded-xl p-6 shadow-sm">
+      <p className="text-body mb-6">
         Yaşınıza göre BES fon dağılımı önerileri. Risk toleransınızı göz önünde bulundurun.
-        <span className="block text-sm text-slate-500 mt-1">
+        <span className="block text-sm text-muted mt-1">
           Age-based pension fund allocation recommendations.
         </span>
       </p>
 
       {/* Age Input */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-slate-600 mb-2">
+        <label className="block text-sm font-medium text-body mb-2">
           Yaşınız / Your Age
         </label>
         <div className="flex gap-4 items-center">
@@ -115,7 +115,7 @@ export function AgeRecommendations() {
               else if (age < 55) setSelectedAge('45-55')
               else setSelectedAge('55+')
             }}
-            className="w-24 border border-slate-300 rounded-lg px-3 py-2 text-slate-700"
+            className="w-24 border border-border-strong rounded-lg px-3 py-2 text-body"
             min="18"
             max="80"
           />
@@ -126,8 +126,8 @@ export function AgeRecommendations() {
                 onClick={() => setSelectedAge(g.range)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
                   selectedAge === g.range
-                    ? 'bg-slate-800 text-white'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    ? 'bg-heading text-surface'
+                    : 'bg-surface-inset text-body hover:bg-surface-inset'
                 }`}
               >
                 {g.range}
@@ -142,7 +142,7 @@ export function AgeRecommendations() {
         {/* Left: Recommendations */}
         <div>
           <div className="flex items-center gap-3 mb-4">
-            <h3 className="text-xl font-bold text-slate-800">{ageGroup.title}</h3>
+            <h3 className="text-xl font-bold text-heading">{ageGroup.title}</h3>
             <span className={`px-2 py-1 rounded text-xs font-semibold ${
               ageGroup.riskLevel === 'high' ? 'bg-red-100 text-red-700' :
               ageGroup.riskLevel === 'medium' ? 'bg-amber-100 text-amber-700' :
@@ -152,34 +152,34 @@ export function AgeRecommendations() {
                ageGroup.riskLevel === 'medium' ? 'Orta Risk' : 'Düşük Risk'}
             </span>
           </div>
-          <p className="text-slate-600 mb-4">{ageGroup.description}</p>
+          <p className="text-body mb-4">{ageGroup.description}</p>
 
-          <h4 className="font-semibold text-slate-800 mb-3">Öneriler</h4>
+          <h4 className="font-semibold text-heading mb-3">Öneriler</h4>
           <ul className="space-y-2">
             {ageGroup.recommendations.map((rec, i) => (
               <li key={i} className="flex items-start gap-2">
                 <span className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
                   rec.priority === 'must' ? 'bg-red-100 text-red-700' :
                   rec.priority === 'should' ? 'bg-amber-100 text-amber-700' :
-                  'bg-slate-100 text-slate-600'
+                  'bg-surface-inset text-body'
                 }`}>
                   {rec.priority === 'must' ? '!' : rec.priority === 'should' ? '•' : '?'}
                 </span>
-                <span className="text-slate-700">{rec.text}</span>
+                <span className="text-body">{rec.text}</span>
               </li>
             ))}
           </ul>
 
-          <div className="mt-4 text-xs text-slate-500">
+          <div className="mt-4 text-xs text-muted">
             <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-red-100"></span> Mutlaka</span>
             <span className="inline-flex items-center gap-1 ml-3"><span className="w-3 h-3 rounded-full bg-amber-100"></span> Tavsiye</span>
-            <span className="inline-flex items-center gap-1 ml-3"><span className="w-3 h-3 rounded-full bg-slate-100"></span> Düşünülebilir</span>
+            <span className="inline-flex items-center gap-1 ml-3"><span className="w-3 h-3 rounded-full bg-surface-inset"></span> Düşünülebilir</span>
           </div>
         </div>
 
         {/* Right: Allocation Chart */}
         <div>
-          <h4 className="font-semibold text-slate-800 mb-4">Önerilen Dağılım</h4>
+          <h4 className="font-semibold text-heading mb-4">Önerilen Dağılım</h4>
 
           <div className="space-y-3">
             <AllocationBar label="Altın Fonları" value={ageGroup.allocation.gold} color="bg-amber-400" />
@@ -201,8 +201,8 @@ export function AgeRecommendations() {
                   #64748b ${ageGroup.allocation.gold + ageGroup.allocation.foreign + ageGroup.allocation.equity + ageGroup.allocation.bond}% 100%
                 )`
               }}>
-              <div className="absolute inset-4 bg-white rounded-full flex items-center justify-center">
-                <span className="text-xs font-semibold text-slate-600">Dağılım</span>
+              <div className="absolute inset-4 bg-surface rounded-full flex items-center justify-center">
+                <span className="text-xs font-semibold text-body">Dağılım</span>
               </div>
             </div>
           </div>
@@ -210,8 +210,8 @@ export function AgeRecommendations() {
       </div>
 
       {/* Warning */}
-      <div className="mt-6 p-4 bg-slate-100 rounded-lg">
-        <p className="text-sm text-slate-600">
+      <div className="mt-6 p-4 bg-surface-inset rounded-lg">
+        <p className="text-sm text-body">
           ⚠️ <strong>Önemli:</strong> Bu öneriler genel bilgi amaçlıdır. Kişisel mali durumunuz,
           risk toleransınız ve hedefleriniz farklı olabilir. Profesyonel bir danışmana başvurmanızı öneririz.
         </p>
@@ -224,10 +224,10 @@ function AllocationBar({ label, value, color }: { label: string; value: number; 
   return (
     <div>
       <div className="flex justify-between text-sm mb-1">
-        <span className="text-slate-600">{label}</span>
-        <span className="font-semibold text-slate-800">{value}%</span>
+        <span className="text-body">{label}</span>
+        <span className="font-semibold text-heading">{value}%</span>
       </div>
-      <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+      <div className="h-3 bg-surface-inset rounded-full overflow-hidden">
         <div className={`h-full ${color} rounded-full`} style={{ width: `${value}%` }} />
       </div>
     </div>

@@ -30,35 +30,35 @@ export function QuickCalculator() {
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-      <h2 className="text-xl font-bold text-slate-800 mb-4">Hızlı Hesaplama / Quick Calculator</h2>
+    <div className="bg-surface border border-border-default rounded-xl p-6 shadow-sm">
+      <h2 className="text-xl font-bold text-heading mb-4">Hızlı Hesaplama</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         {/* Fund Selection */}
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">Fon / Fund</label>
+          <label className="block text-sm font-medium text-body mb-1">Fon</label>
           <FundSearch value={selectedFund} onChange={setSelectedFund} placeholder="Fon ara..." />
         </div>
 
         {/* Start Date */}
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">Başlangıç / Start</label>
+          <label className="block text-sm font-medium text-body mb-1">Başlangıç Tarihi</label>
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800 bg-white focus:ring-2 focus:ring-slate-400 focus:border-slate-400"
+            className="w-full border border-border-strong rounded-lg px-3 py-2 text-heading bg-surface focus:ring-2 focus:ring-slate-400 focus:border-slate-400"
           />
         </div>
 
         {/* Amount */}
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">Tutar (TL)</label>
+          <label className="block text-sm font-medium text-body mb-1">Tutar (TL)</label>
           <input
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800 bg-white focus:ring-2 focus:ring-slate-400 focus:border-slate-400"
+            className="w-full border border-border-strong rounded-lg px-3 py-2 text-heading bg-surface focus:ring-2 focus:ring-slate-400 focus:border-slate-400"
             placeholder="10000"
           />
         </div>
@@ -68,7 +68,7 @@ export function QuickCalculator() {
           <button
             onClick={handleCalculate}
             disabled={loading || !selectedFund}
-            className="w-full bg-slate-800 text-white py-2 px-4 rounded-lg hover:bg-slate-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-heading text-surface py-2 px-4 rounded-lg hover:opacity-90 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Hesaplanıyor...' : 'Hesapla'}
           </button>
@@ -77,7 +77,7 @@ export function QuickCalculator() {
 
       {/* Results */}
       {results && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-slate-200">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-border-default">
           <ResultCard
             label="TL Getiri"
             value={results.tryReturn}
@@ -120,12 +120,12 @@ function ResultCard({
   const colorClass = isPositive ? 'text-profit' : 'text-loss'
 
   return (
-    <div className={`p-4 rounded-lg ${highlight ? 'bg-slate-100 ring-2 ring-slate-300' : 'bg-slate-50'}`}>
-      <p className="text-sm font-medium text-slate-600">{label}</p>
+    <div className={`p-4 rounded-lg ${highlight ? 'bg-surface-inset ring-2 ring-slate-300' : 'bg-surface-raised'}`}>
+      <p className="text-sm font-medium text-body">{label}</p>
       <p className={`text-2xl font-bold ${colorClass}`}>
         {isPositive ? '+' : ''}{value.toFixed(1)}%
       </p>
-      <p className="text-xs text-slate-500 font-medium">{sublabel}</p>
+      <p className="text-xs text-muted font-medium">{sublabel}</p>
     </div>
   )
 }

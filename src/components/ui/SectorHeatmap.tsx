@@ -118,14 +118,14 @@ export function SectorHeatmap() {
       <div className="flex flex-wrap gap-4 items-center justify-between">
         <div className="flex gap-2">
           {(['usd', 'eur', 'gold'] as const).map((b) => (
-            <button key={b} onClick={() => setBenchmark(b)} className={`px-4 py-2 rounded-lg font-medium transition ${benchmark === b ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+            <button key={b} onClick={() => setBenchmark(b)} className={`px-4 py-2 rounded-lg font-medium transition ${benchmark === b ? 'bg-heading text-surface' : 'bg-surface-inset text-body hover:bg-surface-inset'}`}>
               {b === 'usd' ? 'USD' : b === 'eur' ? 'EUR' : 'Altın'}
             </button>
           ))}
         </div>
         <label className="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" checked={showValues} onChange={(e) => setShowValues(e.target.checked)} className="w-4 h-4 rounded border-slate-300" />
-          <span className="text-sm text-slate-600">Değerleri göster</span>
+          <input type="checkbox" checked={showValues} onChange={(e) => setShowValues(e.target.checked)} className="w-4 h-4 rounded border-border-strong" />
+          <span className="text-sm text-body">Değerleri göster</span>
         </label>
       </div>
 
@@ -138,38 +138,38 @@ export function SectorHeatmap() {
         </div>
       )}
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-surface border border-border-default rounded-xl overflow-hidden shadow-sm">
         {loading ? (
           <div className="animate-pulse p-4">
             <div className="flex gap-4 mb-2">
-              <div className="w-32 h-8 bg-slate-100 rounded" />
-              {PERIODS.map((p) => <div key={p} className="w-16 h-8 bg-slate-100 rounded" />)}
+              <div className="w-32 h-8 bg-surface-inset rounded" />
+              {PERIODS.map((p) => <div key={p} className="w-16 h-8 bg-surface-inset rounded" />)}
             </div>
             {Array.from({ length: 7 }).map((_, i) => (
               <div key={i} className="flex gap-4 py-2">
-                <div className="w-32 h-10 bg-slate-100 rounded" />
-                {PERIODS.map((p) => <div key={p} className="w-16 h-10 bg-slate-100 rounded" />)}
-                <div className="w-16 h-10 bg-slate-100 rounded" />
+                <div className="w-32 h-10 bg-surface-inset rounded" />
+                {PERIODS.map((p) => <div key={p} className="w-16 h-10 bg-surface-inset rounded" />)}
+                <div className="w-16 h-10 bg-surface-inset rounded" />
               </div>
             ))}
           </div>
         ) : error ? (
           <div className="p-8 text-center">
             <p className="text-red-600 mb-3">Veri yüklenirken hata oluştu.</p>
-            <button onClick={load} className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition text-sm font-medium">Tekrar Dene</button>
+            <button onClick={load} className="px-4 py-2 bg-heading text-surface rounded-lg hover:opacity-90 transition text-sm font-medium">Tekrar Dene</button>
           </div>
         ) : categories.length === 0 ? (
-          <div className="p-8 text-center text-slate-500">Veri bulunamadı.</div>
+          <div className="p-8 text-center text-muted">Veri bulunamadı.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-slate-50">
-                  <th className="text-left px-4 py-3 text-sm font-semibold text-slate-600 sticky left-0 bg-slate-50 whitespace-nowrap min-w-[140px]">Kategori</th>
+                <tr className="bg-surface-raised">
+                  <th className="text-left px-4 py-3 text-sm font-semibold text-body sticky left-0 bg-surface-raised whitespace-nowrap min-w-[140px]">Kategori</th>
                   {PERIODS.map((period) => (
-                    <th key={period} className="px-4 py-3 text-sm font-semibold text-slate-600 text-center min-w-[80px]">{PERIOD_LABELS[period]}</th>
+                    <th key={period} className="px-4 py-3 text-sm font-semibold text-body text-center min-w-[80px]">{PERIOD_LABELS[period]}</th>
                   ))}
-                  <th className="px-4 py-3 text-sm font-semibold text-slate-600 text-center">Ort.</th>
+                  <th className="px-4 py-3 text-sm font-semibold text-body text-center">Ort.</th>
                 </tr>
               </thead>
               <tbody>
@@ -178,9 +178,9 @@ export function SectorHeatmap() {
                   const avgReturn = values.reduce((a, b) => a + b, 0) / values.length
                   const avgGrade = getGrade(avgReturn)
                   return (
-                    <tr key={cat.category} className="border-t border-slate-100">
-                      <td className="px-4 py-3 sticky left-0 bg-white whitespace-nowrap">
-                        <p className="font-medium text-slate-800">{cat.category}</p>
+                    <tr key={cat.category} className="border-t border-border-default">
+                      <td className="px-4 py-3 sticky left-0 bg-surface whitespace-nowrap">
+                        <p className="font-medium text-heading">{cat.category}</p>
                       </td>
                       {PERIODS.map((period) => {
                         const value = cat[benchmark][period]
@@ -217,7 +217,7 @@ export function SectorHeatmap() {
         ].map((item) => (
           <div key={item.grade} className="flex items-center gap-2">
             <span className={`w-8 h-8 ${item.color} rounded text-white font-bold flex items-center justify-center`}>{item.grade}</span>
-            <span className="text-sm text-slate-600">{item.label}</span>
+            <span className="text-sm text-body">{item.label}</span>
           </div>
         ))}
       </div>

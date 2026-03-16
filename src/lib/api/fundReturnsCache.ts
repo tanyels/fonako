@@ -42,17 +42,30 @@ export async function getFundReturns(period: string, limit?: number): Promise<Fu
   if (existing) return existing
 
   const promise = (async () => {
-    const { data } = await supabase
-      .from('fund_returns')
-      .select('fund_code, period, try_return, usd_return, eur_return, gold_return, sp500_return')
-      .eq('period', period)
-      .order('usd_return', { ascending: false })
-      .limit(limit || 3000)
+    // Paginate to get all rows (Supabase max-rows default is 1000)
+    const allData: FundReturnRow[] = []
+    const pageSize = 1000
+    const maxRows = limit || 10000
+    let offset = 0
 
-    const result = (data || []) as FundReturnRow[]
-    cache.set(key, { data: result, fetchedAt: Date.now() })
+    while (offset < maxRows) {
+      const batchLimit = Math.min(pageSize, maxRows - offset)
+      const { data } = await supabase
+        .from('fund_returns')
+        .select('fund_code, period, try_return, usd_return, eur_return, gold_return, sp500_return')
+        .eq('period', period)
+        .order('usd_return', { ascending: false })
+        .range(offset, offset + batchLimit - 1)
+
+      const batch = (data || []) as FundReturnRow[]
+      allData.push(...batch)
+      if (batch.length < batchLimit) break
+      offset += pageSize
+    }
+
+    cache.set(key, { data: allData, fetchedAt: Date.now() })
     inflight.delete(key)
-    return result
+    return allData
   })()
 
   inflight.set(key, promise)

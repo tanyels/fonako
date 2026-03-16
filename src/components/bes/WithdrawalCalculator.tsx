@@ -15,10 +15,10 @@ export function WithdrawalCalculator() {
   const results = calculateWithdrawalScenarios(value, years, annualLoss)
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-      <p className="text-slate-600 mb-6">
+    <div className="bg-surface border border-border-default rounded-xl p-6 shadow-sm">
+      <p className="text-body mb-6">
         BES&apos;ten erken çıkış yapmalı mısınız? Cezaları ve devam etmenin maliyetini karşılaştırın.
-        <span className="block text-sm text-slate-500 mt-1">
+        <span className="block text-sm text-muted mt-1">
           Should you withdraw from your pension early? Compare penalties vs cost of staying.
         </span>
       </p>
@@ -26,38 +26,38 @@ export function WithdrawalCalculator() {
       {/* Inputs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             Mevcut Değer (₺)
           </label>
           <input
             type="number"
             value={currentValue}
             onChange={(e) => setCurrentValue(e.target.value)}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-700"
+            className="w-full border border-border-strong rounded-lg px-3 py-2 text-body"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             Sistemde Geçen Süre (Yıl)
           </label>
           <input
             type="number"
             value={yearsInSystem}
             onChange={(e) => setYearsInSystem(e.target.value)}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-700"
+            className="w-full border border-border-strong rounded-lg px-3 py-2 text-body"
             min="0"
             max="30"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             Beklenen Yıllık USD Kaybı (%)
           </label>
           <input
             type="number"
             value={expectedUsdLoss}
             onChange={(e) => setExpectedUsdLoss(e.target.value)}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-700"
+            className="w-full border border-border-strong rounded-lg px-3 py-2 text-body"
             min="0"
             max="50"
           />
@@ -65,23 +65,23 @@ export function WithdrawalCalculator() {
       </div>
 
       {/* Penalty Info */}
-      <div className="bg-slate-50 rounded-lg p-4 mb-6">
-        <h4 className="font-semibold text-slate-800 mb-2">Erken Çıkış Cezaları</h4>
+      <div className="bg-surface-raised rounded-lg p-4 mb-6">
+        <h4 className="font-semibold text-heading mb-2">Erken Çıkış Cezaları</h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div className={`p-2 rounded ${years < 3 ? 'bg-red-100 ring-2 ring-red-300' : 'bg-white'}`}>
-            <p className="text-slate-600">0-3 yıl</p>
+          <div className={`p-2 rounded ${years < 3 ? 'bg-red-100 ring-2 ring-red-300' : 'bg-surface'}`}>
+            <p className="text-body">0-3 yıl</p>
             <p className="font-bold text-red-600">%15 vergi + devlet katkısı iadesi</p>
           </div>
-          <div className={`p-2 rounded ${years >= 3 && years < 6 ? 'bg-amber-100 ring-2 ring-amber-300' : 'bg-white'}`}>
-            <p className="text-slate-600">3-6 yıl</p>
+          <div className={`p-2 rounded ${years >= 3 && years < 6 ? 'bg-amber-100 ring-2 ring-amber-300' : 'bg-surface'}`}>
+            <p className="text-body">3-6 yıl</p>
             <p className="font-bold text-amber-600">%10 vergi + kısmi iade</p>
           </div>
-          <div className={`p-2 rounded ${years >= 6 && years < 10 ? 'bg-yellow-100 ring-2 ring-yellow-300' : 'bg-white'}`}>
-            <p className="text-slate-600">6-10 yıl</p>
+          <div className={`p-2 rounded ${years >= 6 && years < 10 ? 'bg-yellow-100 ring-2 ring-yellow-300' : 'bg-surface'}`}>
+            <p className="text-body">6-10 yıl</p>
             <p className="font-bold text-yellow-600">%5 vergi</p>
           </div>
-          <div className={`p-2 rounded ${years >= 10 ? 'bg-emerald-100 ring-2 ring-emerald-300' : 'bg-white'}`}>
-            <p className="text-slate-600">10+ yıl (56 yaş)</p>
+          <div className={`p-2 rounded ${years >= 10 ? 'bg-emerald-100 ring-2 ring-emerald-300' : 'bg-surface'}`}>
+            <p className="text-body">10+ yıl (56 yaş)</p>
             <p className="font-bold text-emerald-600">Cezasız çıkış</p>
           </div>
         </div>
@@ -90,42 +90,42 @@ export function WithdrawalCalculator() {
       {/* Comparison Table */}
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-slate-50">
+          <thead className="bg-surface-raised">
             <tr>
-              <th className="text-left px-4 py-3 text-sm font-semibold text-slate-600">Senaryo</th>
-              <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">Şimdi</th>
-              <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">1 Yıl Sonra</th>
-              <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">3 Yıl Sonra</th>
-              <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">5 Yıl Sonra</th>
+              <th className="text-left px-4 py-3 text-sm font-semibold text-body">Senaryo</th>
+              <th className="text-right px-4 py-3 text-sm font-semibold text-body">Şimdi</th>
+              <th className="text-right px-4 py-3 text-sm font-semibold text-body">1 Yıl Sonra</th>
+              <th className="text-right px-4 py-3 text-sm font-semibold text-body">3 Yıl Sonra</th>
+              <th className="text-right px-4 py-3 text-sm font-semibold text-body">5 Yıl Sonra</th>
             </tr>
           </thead>
           <tbody>
-            <tr className="border-b border-slate-100">
+            <tr className="border-b border-border-default">
               <td className="px-4 py-3">
-                <p className="font-medium text-slate-800">Çık + USD&apos;ye Çevir</p>
-                <p className="text-xs text-slate-500">Ceza öde, kalanı USD tut</p>
+                <p className="font-medium text-heading">Çık + USD&apos;ye Çevir</p>
+                <p className="text-xs text-muted">Ceza öde, kalanı USD tut</p>
               </td>
               {results.withdrawNow.map((v, i) => (
-                <td key={i} className="px-4 py-3 text-right font-semibold text-slate-700">
+                <td key={i} className="px-4 py-3 text-right font-semibold text-body">
                   ${v.toLocaleString('en-US')}
                 </td>
               ))}
             </tr>
-            <tr className="border-b border-slate-100 bg-slate-50">
+            <tr className="border-b border-border-default bg-surface-raised">
               <td className="px-4 py-3">
-                <p className="font-medium text-slate-800">BES&apos;te Kal</p>
-                <p className="text-xs text-slate-500">Mevcut fonlarda devam</p>
+                <p className="font-medium text-heading">BES&apos;te Kal</p>
+                <p className="text-xs text-muted">Mevcut fonlarda devam</p>
               </td>
               {results.stayInBES.map((v, i) => (
-                <td key={i} className="px-4 py-3 text-right font-semibold text-slate-700">
+                <td key={i} className="px-4 py-3 text-right font-semibold text-body">
                   ${v.toLocaleString('en-US')}
                 </td>
               ))}
             </tr>
-            <tr className="border-b border-slate-100">
+            <tr className="border-b border-border-default">
               <td className="px-4 py-3">
-                <p className="font-medium text-slate-800">Fark</p>
-                <p className="text-xs text-slate-500">Çıkış avantajı</p>
+                <p className="font-medium text-heading">Fark</p>
+                <p className="text-xs text-muted">Çıkış avantajı</p>
               </td>
               {results.difference.map((v, i) => (
                 <td key={i} className={`px-4 py-3 text-right font-bold ${v >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>

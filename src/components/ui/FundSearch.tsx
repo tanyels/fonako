@@ -75,7 +75,7 @@ export function FundSearch({ value, onChange, placeholder = 'Fon adı veya kodu 
             handleFocus()
           }}
           placeholder={placeholder}
-          className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-700 bg-white font-medium focus:ring-2 focus:ring-slate-400 focus:border-slate-400 text-base pr-10"
+          className="w-full border border-border-strong rounded-lg px-4 py-2.5 text-body bg-surface font-medium focus:ring-2 focus:ring-slate-400 focus:border-slate-400 text-base pr-10"
           aria-label="Fon ara"
           aria-autocomplete="list"
           aria-expanded={open}
@@ -90,7 +90,7 @@ export function FundSearch({ value, onChange, placeholder = 'Fon adı veya kodu 
               setOpen(!open)
             }
           }}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-subtle hover:text-body"
           aria-label={value || query ? "Aramayı temizle" : "Arama menüsünü aç"}
         >
           {value || query ? '✕' : (
@@ -103,25 +103,25 @@ export function FundSearch({ value, onChange, placeholder = 'Fon adı veya kodu 
 
       {/* Results - in document flow, pushes content down */}
       {open && loading && query.length > 0 && (
-        <div className="mt-1 border border-slate-200 rounded-lg bg-white shadow-sm px-4 py-3 text-sm text-slate-400 animate-pulse">
+        <div className="mt-1 border border-border-default rounded-lg bg-surface shadow-sm px-4 py-3 text-sm text-subtle animate-pulse">
           Aranıyor...
         </div>
       )}
 
       {open && !loading && filtered.length > 0 && (
-        <ul className="mt-1 border border-slate-200 rounded-lg bg-white shadow-sm overflow-y-auto max-h-80">
+        <ul className="mt-1 border border-border-default rounded-lg bg-surface shadow-sm overflow-y-auto max-h-80">
           {filtered.map((fund) => (
             <li key={fund.code}>
               <button
                 onClick={() => handleSelect(fund)}
-                className="w-full text-left px-4 py-2.5 hover:bg-slate-200 transition border-b border-slate-100 last:border-b-0"
+                className="w-full text-left px-4 py-2.5 hover:bg-surface-inset transition border-b border-border-default last:border-b-0"
                 aria-label={`${fund.code} - ${fund.name} fonunu seç`}
               >
-                <span className="font-semibold text-slate-800 text-sm">{fund.code}</span>
-                <span className="text-slate-400 mx-1.5">·</span>
-                <span className="text-slate-600 text-sm">{fund.name}</span>
-                <span className="text-slate-400 mx-1.5">·</span>
-                <span className="text-xs text-slate-400">{fund.category}</span>
+                <span className="font-semibold text-heading text-sm">{fund.code}</span>
+                <span className="text-subtle mx-1.5">·</span>
+                <span className="text-body text-sm">{fund.name}</span>
+                <span className="text-subtle mx-1.5">·</span>
+                <span className="text-xs text-subtle">{fund.category}</span>
               </button>
             </li>
           ))}
@@ -129,7 +129,7 @@ export function FundSearch({ value, onChange, placeholder = 'Fon adı veya kodu 
       )}
 
       {open && !loading && query.length > 0 && filtered.length === 0 && (
-        <div className="mt-1 border border-slate-200 rounded-lg bg-white shadow-sm px-4 py-3 text-sm text-slate-500">
+        <div className="mt-1 border border-border-default rounded-lg bg-surface shadow-sm px-4 py-3 text-sm text-muted">
           Sonuç bulunamadı
         </div>
       )}

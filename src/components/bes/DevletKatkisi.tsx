@@ -14,10 +14,10 @@ export function DevletKatkisi() {
   const scenarios = calculateScenarios(totalWithMatch, parseInt(years) || 5)
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-      <p className="text-slate-600 mb-6">
+    <div className="bg-surface border border-border-default rounded-xl p-6 shadow-sm">
+      <p className="text-body mb-6">
         Devlet %30 katkı sağlıyor - ama bu gerçekten işe yarıyor mu?
-        <span className="block text-sm text-slate-500 mt-1">
+        <span className="block text-sm text-muted mt-1">
           Government provides 30% match - but does it actually help?
         </span>
       </p>
@@ -25,25 +25,25 @@ export function DevletKatkisi() {
       {/* Inputs */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             Toplam Katkınız (₺)
           </label>
           <input
             type="number"
             value={contribution}
             onChange={(e) => setContribution(e.target.value)}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-700"
+            className="w-full border border-border-strong rounded-lg px-3 py-2 text-body"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             Süre (Yıl)
           </label>
           <input
             type="number"
             value={years}
             onChange={(e) => setYears(e.target.value)}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-700"
+            className="w-full border border-border-strong rounded-lg px-3 py-2 text-body"
             min="1"
             max="20"
           />
@@ -52,48 +52,48 @@ export function DevletKatkisi() {
 
       {/* Summary */}
       <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-slate-50 rounded-lg p-4 text-center">
-          <p className="text-sm text-slate-600">Sizin Katkınız</p>
-          <p className="text-xl font-bold text-slate-800">₺{totalContribution.toLocaleString('tr-TR')}</p>
+        <div className="bg-surface-raised rounded-lg p-4 text-center">
+          <p className="text-sm text-body">Sizin Katkınız</p>
+          <p className="text-xl font-bold text-heading">₺{totalContribution.toLocaleString('tr-TR')}</p>
         </div>
         <div className="bg-emerald-50 rounded-lg p-4 text-center">
-          <p className="text-sm text-slate-600">Devlet Katkısı (+30%)</p>
+          <p className="text-sm text-body">Devlet Katkısı (+30%)</p>
           <p className="text-xl font-bold text-emerald-600">₺{governmentMatch.toLocaleString('tr-TR')}</p>
         </div>
         <div className="bg-blue-50 rounded-lg p-4 text-center">
-          <p className="text-sm text-slate-600">Toplam</p>
+          <p className="text-sm text-body">Toplam</p>
           <p className="text-xl font-bold text-blue-600">₺{totalWithMatch.toLocaleString('tr-TR')}</p>
         </div>
       </div>
 
       {/* Scenario Comparison */}
-      <h4 className="font-semibold text-slate-800 mb-4">{years} Yıl Sonra Karşılaştırma</h4>
+      <h4 className="font-semibold text-heading mb-4">{years} Yıl Sonra Karşılaştırma</h4>
 
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-slate-50">
+          <thead className="bg-surface-raised">
             <tr>
-              <th className="text-left px-4 py-3 text-sm font-semibold text-slate-600">Senaryo</th>
-              <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">TL Değer</th>
-              <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">USD Değer</th>
-              <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">Sonuç</th>
+              <th className="text-left px-4 py-3 text-sm font-semibold text-body">Senaryo</th>
+              <th className="text-right px-4 py-3 text-sm font-semibold text-body">TL Değer</th>
+              <th className="text-right px-4 py-3 text-sm font-semibold text-body">USD Değer</th>
+              <th className="text-right px-4 py-3 text-sm font-semibold text-body">Sonuç</th>
             </tr>
           </thead>
           <tbody>
             {scenarios.map((s, i) => (
-              <tr key={i} className="border-b border-slate-100">
+              <tr key={i} className="border-b border-border-default">
                 <td className="px-4 py-3">
-                  <p className="font-medium text-slate-800">{s.name}</p>
-                  <p className="text-xs text-slate-500">{s.description}</p>
+                  <p className="font-medium text-heading">{s.name}</p>
+                  <p className="text-xs text-muted">{s.description}</p>
                 </td>
-                <td className="px-4 py-3 text-right font-semibold text-slate-700">
+                <td className="px-4 py-3 text-right font-semibold text-body">
                   ₺{s.valueTL.toLocaleString('tr-TR')}
                 </td>
-                <td className="px-4 py-3 text-right font-semibold text-slate-700">
+                <td className="px-4 py-3 text-right font-semibold text-body">
                   ${s.valueUSD.toLocaleString('en-US')}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <span className={`font-bold ${s.verdict === 'winner' ? 'text-emerald-600' : s.verdict === 'loser' ? 'text-red-600' : 'text-slate-600'}`}>
+                  <span className={`font-bold ${s.verdict === 'winner' ? 'text-emerald-600' : s.verdict === 'loser' ? 'text-red-600' : 'text-body'}`}>
                     {s.verdict === 'winner' ? '✓ En İyi' : s.verdict === 'loser' ? '✗ En Kötü' : '-'}
                   </span>
                 </td>

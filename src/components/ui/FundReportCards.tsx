@@ -135,15 +135,15 @@ export function FundReportCards() {
   return (
     <div className="space-y-6">
       {/* Grade Legend */}
-      <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-        <h3 className="font-semibold text-slate-800 mb-3">Not Sistemi / Grading System</h3>
+      <div className="bg-surface border border-border-default rounded-xl p-4 shadow-sm">
+        <h3 className="font-semibold text-heading mb-3">Not Sistemi / Grading System</h3>
         <div className="flex flex-wrap gap-4">
           {Object.entries(GRADE_CONFIG).map(([grade, config]) => (
             <div key={grade} className="flex items-center gap-2">
               <span className={`w-8 h-8 ${config.color} rounded-lg flex items-center justify-center text-white font-bold`}>{grade}</span>
               <div>
-                <p className="text-sm font-medium text-slate-700">{config.label}</p>
-                <p className="text-xs text-slate-500">{config.description}</p>
+                <p className="text-sm font-medium text-body">{config.label}</p>
+                <p className="text-xs text-muted">{config.description}</p>
               </div>
             </div>
           ))}
@@ -157,7 +157,7 @@ export function FundReportCards() {
             key={p.key}
             onClick={() => setSelectedPeriod(p.key)}
             className={`px-4 py-2 rounded-lg font-medium transition ${
-              selectedPeriod === p.key ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              selectedPeriod === p.key ? 'bg-heading text-surface' : 'bg-surface-inset text-body hover:bg-surface-inset'
             }`}
             aria-label={`${p.label} dönemini seç`}
             aria-pressed={selectedPeriod === p.key}
@@ -171,14 +171,14 @@ export function FundReportCards() {
       {loading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="animate-pulse rounded-xl p-4 bg-slate-50">
+            <div key={i} className="animate-pulse rounded-xl p-4 bg-surface-raised">
               <div className="flex justify-between mb-3">
-                <div className="w-12 h-12 bg-slate-200 rounded-xl" />
-                <div className="w-4 h-4 bg-slate-200 rounded" />
+                <div className="w-12 h-12 bg-surface-inset rounded-xl" />
+                <div className="w-4 h-4 bg-surface-inset rounded" />
               </div>
-              <div className="h-4 w-24 bg-slate-200 rounded mb-1" />
-              <div className="h-3 w-16 bg-slate-200 rounded mb-2" />
-              <div className="h-6 w-20 bg-slate-200 rounded" />
+              <div className="h-4 w-24 bg-surface-inset rounded mb-1" />
+              <div className="h-3 w-16 bg-surface-inset rounded mb-2" />
+              <div className="h-6 w-20 bg-surface-inset rounded" />
             </div>
           ))}
         </div>
@@ -190,7 +190,7 @@ export function FundReportCards() {
           </button>
         </div>
       ) : funds.length === 0 ? (
-        <div className="text-center text-slate-500 py-8">Bu dönem için veri bulunamadı.</div>
+        <div className="text-center text-muted py-8">Bu dönem için veri bulunamadı.</div>
       ) : (
         <>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -208,15 +208,15 @@ export function FundReportCards() {
                 >
                   <div className="flex justify-between items-start mb-3">
                     <span className={`w-12 h-12 ${config.color} rounded-xl flex items-center justify-center text-white text-2xl font-bold shadow-lg`}>{fund.grade}</span>
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-muted">
                       {fund.trend === 'up' ? '📈' : fund.trend === 'down' ? '📉' : '➡️'}
                     </span>
                   </div>
-                  <h4 className="font-semibold text-slate-800 text-sm mb-1 line-clamp-2">{info?.name || fund.code}</h4>
-                  <p className="text-xs text-slate-500 mb-2">{fund.code} · {info?.category || '-'}</p>
+                  <h4 className="font-semibold text-heading text-sm mb-1 line-clamp-2">{info?.name || fund.code}</h4>
+                  <p className="text-xs text-muted mb-2">{fund.code} · {info?.category || '-'}</p>
                   <p className={`text-lg font-bold ${fund.usdReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                     {fund.usdReturn >= 0 ? '+' : ''}{fund.usdReturn.toFixed(1)}%
-                    <span className="text-xs font-normal text-slate-500 ml-1">USD</span>
+                    <span className="text-xs font-normal text-muted ml-1">USD</span>
                   </p>
                 </div>
               )
@@ -227,7 +227,7 @@ export function FundReportCards() {
             <div className="text-center">
               <button
                 onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-                className="px-6 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition text-sm font-medium"
+                className="px-6 py-2 bg-surface-inset text-body rounded-lg hover:bg-surface-inset transition text-sm font-medium"
                 aria-label="Daha fazla fon göster"
               >
                 Daha fazla göster ({funds.length - visibleCount} kaldı)
@@ -239,16 +239,16 @@ export function FundReportCards() {
 
       {/* Selected Fund Detail */}
       {selectedFundData && (
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+        <div className="bg-surface border border-border-default rounded-xl p-6 shadow-sm">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="text-xl font-bold text-slate-800">{selectedInfo?.name || selectedFundData.code}</h3>
-              <p className="text-slate-500">{selectedFundData.code} · {selectedInfo?.category || '-'}</p>
+              <h3 className="text-xl font-bold text-heading">{selectedInfo?.name || selectedFundData.code}</h3>
+              <p className="text-muted">{selectedFundData.code} · {selectedInfo?.category || '-'}</p>
             </div>
-            <button onClick={() => setSelectedFund(null)} className="text-slate-400 hover:text-slate-600" aria-label="Detayları kapat">✕</button>
+            <button onClick={() => setSelectedFund(null)} className="text-subtle hover:text-body" aria-label="Detayları kapat">✕</button>
           </div>
 
-          <h4 className="font-semibold text-slate-700 mb-3">Not Geçmişi / Grade History</h4>
+          <h4 className="font-semibold text-body mb-3">Not Geçmişi / Grade History</h4>
           <div className="grid grid-cols-3 gap-4 mb-6">
             {PERIOD_OPTIONS.map((p) => {
               const { usd: usdReturn, sp500: sp500Return } = detailReturns[p.key]
@@ -256,7 +256,7 @@ export function FundReportCards() {
               const config = GRADE_CONFIG[grade]
               return (
                 <div key={p.key} className={`${config.bgLight} rounded-lg p-4 text-center`}>
-                  <p className="text-sm text-slate-600 mb-2">{p.label}</p>
+                  <p className="text-sm text-body mb-2">{p.label}</p>
                   <span className={`inline-block w-10 h-10 ${config.color} rounded-lg text-white text-xl font-bold leading-10`}>{grade}</span>
                   <p className={`text-sm font-semibold mt-2 ${usdReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                     {usdReturn >= 0 ? '+' : ''}{usdReturn.toFixed(1)}% USD
@@ -291,7 +291,7 @@ export function FundReportCards() {
             return (
               <div key={grade} className={`${config.bgLight} rounded-lg p-4 text-center`}>
                 <span className={`text-3xl font-bold ${config.textColor}`}>{count}</span>
-                <p className="text-sm text-slate-600">Fon {grade} notu aldı</p>
+                <p className="text-sm text-body">Fon {grade} notu aldı</p>
               </div>
             )
           })}

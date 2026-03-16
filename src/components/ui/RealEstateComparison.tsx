@@ -131,19 +131,19 @@ export function RealEstateComparison() {
       </div>
 
       {/* Controls */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+      <div className="bg-surface border border-border-default rounded-xl p-6 shadow-sm">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-slate-600 mb-1">Fon</label>
+            <label className="block text-sm font-medium text-body mb-1">Fon</label>
             <FundSearch value={selectedFund} onChange={setSelectedFund} placeholder="Fon ara..." />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-600 mb-1">Şehir</label>
+            <label className="block text-sm font-medium text-body mb-1">Şehir</label>
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-700 bg-white"
+              className="w-full border border-border-strong rounded-lg px-3 py-2 text-body bg-surface"
             >
               {CITY_DATA.map((c) => (
                 <option key={c.code} value={c.code}>{c.name}</option>
@@ -152,11 +152,11 @@ export function RealEstateComparison() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-600 mb-1">Başlangıç Yılı</label>
+            <label className="block text-sm font-medium text-body mb-1">Başlangıç Yılı</label>
             <select
               value={startYear}
               onChange={(e) => setStartYear(e.target.value)}
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-700 bg-white"
+              className="w-full border border-border-strong rounded-lg px-3 py-2 text-body bg-surface"
             >
               {['2020', '2021', '2022', '2023', '2024'].map((y) => (
                 <option key={y} value={y}>{y}</option>
@@ -165,12 +165,12 @@ export function RealEstateComparison() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-600 mb-1">Yatırım (TL)</label>
+            <label className="block text-sm font-medium text-body mb-1">Yatırım (TL)</label>
             <input
               type="number"
               value={investmentTL}
               onChange={(e) => setInvestmentTL(e.target.value)}
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-700"
+              className="w-full border border-border-strong rounded-lg px-3 py-2 text-body"
             />
           </div>
         </div>
@@ -180,9 +180,9 @@ export function RealEstateComparison() {
             type="checkbox"
             checked={includeRent}
             onChange={(e) => setIncludeRent(e.target.checked)}
-            className="w-4 h-4 rounded border-slate-300"
+            className="w-4 h-4 rounded border-border-strong"
           />
-          <span className="text-sm text-slate-600">Kira gelirini dahil et ({city?.rentalYield}% yıllık)</span>
+          <span className="text-sm text-body">Kira gelirini dahil et ({city?.rentalYield}% yıllık)</span>
         </label>
       </div>
 
@@ -197,52 +197,52 @@ export function RealEstateComparison() {
       )}
 
       {/* m² Comparison */}
-      <div className="bg-slate-100 rounded-lg p-4">
-        <p className="text-slate-700">
+      <div className="bg-surface-inset rounded-lg p-4">
+        <p className="text-body">
           <strong>₺{initialTL.toLocaleString('tr-TR')}</strong> ile {startYear} yılında {city?.name}&apos;da yaklaşık <strong>{m2In2020.toFixed(0)} m²</strong> konut alınabilirdi.
         </p>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-muted mt-1">
           Bugün aynı konutun değeri: ~₺{(m2In2020 * (city?.avgPriceM2_2024 || 45000)).toLocaleString('tr-TR')}
         </p>
       </div>
 
       {/* Results Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-          <p className="text-sm text-slate-600 mb-1">{fund?.name || 'Fon seçin'}</p>
+        <div className="bg-surface border border-border-default rounded-xl p-6 shadow-sm">
+          <p className="text-sm text-body mb-1">{fund?.name || 'Fon seçin'}</p>
           {loadingFund ? (
             <div className="animate-pulse">
-              <div className="h-9 bg-slate-100 rounded mt-1 mb-1" />
-              <div className="h-4 w-20 bg-slate-100 rounded" />
+              <div className="h-9 bg-surface-inset rounded mt-1 mb-1" />
+              <div className="h-4 w-20 bg-surface-inset rounded" />
             </div>
           ) : hasFundData ? (
             <>
-              <p className="text-3xl font-bold text-slate-800">${finalFundUSD.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-heading">${finalFundUSD.toLocaleString()}</p>
               <p className={`text-sm font-semibold ${fundUsdReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                 {fundUsdReturn >= 0 ? '+' : ''}{fundUsdReturn.toFixed(0)}% USD
               </p>
             </>
           ) : (
-            <p className="text-slate-400 mt-1">Fon seçin</p>
+            <p className="text-subtle mt-1">Fon seçin</p>
           )}
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-          <p className="text-sm text-slate-600 mb-1">{city?.name} Konut</p>
-          <p className="text-3xl font-bold text-slate-800">${totalRealEstateUSD.toLocaleString()}</p>
+        <div className="bg-surface border border-border-default rounded-xl p-6 shadow-sm">
+          <p className="text-sm text-body mb-1">{city?.name} Konut</p>
+          <p className="text-3xl font-bold text-heading">${totalRealEstateUSD.toLocaleString()}</p>
           <p className="text-sm font-semibold text-emerald-600">
             +{((totalRealEstateUSD / initialUSD - 1) * 100).toFixed(0)}% USD
-            {includeRent && <span className="text-slate-500 font-normal"> (kira dahil)</span>}
+            {includeRent && <span className="text-muted font-normal"> (kira dahil)</span>}
           </p>
         </div>
 
         {hasFundData && (
           <div className={`rounded-xl p-6 shadow-sm ${totalRealEstateUSD > finalFundUSD ? 'bg-blue-50 border border-blue-200' : 'bg-emerald-50 border border-emerald-200'}`}>
-            <p className="text-sm text-slate-600 mb-1">Kazanan</p>
+            <p className="text-sm text-body mb-1">Kazanan</p>
             <p className={`text-2xl font-bold ${totalRealEstateUSD > finalFundUSD ? 'text-blue-700' : 'text-emerald-700'}`}>
               {totalRealEstateUSD > finalFundUSD ? `${city?.name} Konut` : `${fund?.code}`}
             </p>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-body">
               ${Math.abs(totalRealEstateUSD - finalFundUSD).toLocaleString()} fark
             </p>
           </div>
@@ -250,39 +250,39 @@ export function RealEstateComparison() {
       </div>
 
       {/* Year by Year */}
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-surface border border-border-default rounded-xl overflow-hidden shadow-sm">
         <table className="w-full">
-          <thead className="bg-slate-50">
+          <thead className="bg-surface-raised">
             <tr>
-              <th className="text-left px-4 py-3 text-sm font-semibold text-slate-600">Yıl</th>
-              <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">Konut USD</th>
-              <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">Getiri</th>
-              {includeRent && <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">Kümülatif Kira</th>}
-              {hasFundData && <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">{fund?.code} USD Getiri</th>}
-              <th className="text-right px-4 py-3 text-sm font-semibold text-slate-600">S&P 500</th>
+              <th className="text-left px-4 py-3 text-sm font-semibold text-body">Yıl</th>
+              <th className="text-right px-4 py-3 text-sm font-semibold text-body">Konut USD</th>
+              <th className="text-right px-4 py-3 text-sm font-semibold text-body">Getiri</th>
+              {includeRent && <th className="text-right px-4 py-3 text-sm font-semibold text-body">Kümülatif Kira</th>}
+              {hasFundData && <th className="text-right px-4 py-3 text-sm font-semibold text-body">{fund?.code} USD Getiri</th>}
+              <th className="text-right px-4 py-3 text-sm font-semibold text-body">S&P 500</th>
             </tr>
           </thead>
           <tbody>
             {yearlyData.map((data) => (
-              <tr key={data.year} className="border-t border-slate-100">
-                <td className="px-4 py-3 font-medium text-slate-700">{data.year}</td>
-                <td className="px-4 py-3 text-right font-semibold text-slate-700">${data.realEstateValueUSD.toLocaleString()}</td>
+              <tr key={data.year} className="border-t border-border-default">
+                <td className="px-4 py-3 font-medium text-body">{data.year}</td>
+                <td className="px-4 py-3 text-right font-semibold text-body">${data.realEstateValueUSD.toLocaleString()}</td>
                 <td className="px-4 py-3 text-right">
                   <span className="text-xs text-emerald-600">+{data.realEstateReturn}%</span>
                 </td>
                 {includeRent && (
-                  <td className="px-4 py-3 text-right text-slate-600">${data.totalRentUSD.toLocaleString()}</td>
+                  <td className="px-4 py-3 text-right text-body">${data.totalRentUSD.toLocaleString()}</td>
                 )}
                 {hasFundData && (
                   <td className="px-4 py-3 text-right">
                     {loadingFund ? (
-                      <span className="inline-block w-12 h-4 bg-slate-100 rounded animate-pulse" />
+                      <span className="inline-block w-12 h-4 bg-surface-inset rounded animate-pulse" />
                     ) : data.fundReturn !== null ? (
                       <span className={`font-semibold ${data.fundReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                         {data.fundReturn >= 0 ? '+' : ''}{data.fundReturn.toFixed(1)}%
                       </span>
                     ) : (
-                      <span className="text-slate-400">-</span>
+                      <span className="text-subtle">-</span>
                     )}
                   </td>
                 )}
@@ -292,7 +292,7 @@ export function RealEstateComparison() {
                       {data.sp500Return >= 0 ? '+' : ''}{data.sp500Return.toFixed(1)}%
                     </span>
                   ) : (
-                    <span className="text-slate-400">-</span>
+                    <span className="text-subtle">-</span>
                   )}
                 </td>
               </tr>
@@ -300,8 +300,8 @@ export function RealEstateComparison() {
           </tbody>
         </table>
         {hasFundData && (
-          <div className="border-t border-slate-200 px-4 py-3 bg-slate-50">
-            <p className="text-sm text-slate-600">
+          <div className="border-t border-border-default px-4 py-3 bg-surface-raised">
+            <p className="text-sm text-body">
               {fund?.code} kümülatif USD getirisi: <span className={`font-semibold ${fundUsdReturn! >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                 {fundUsdReturn! >= 0 ? '+' : ''}{fundUsdReturn!.toFixed(1)}%
               </span>
@@ -322,9 +322,9 @@ export function RealEstateComparison() {
             <li>Fiziksel, somut varlık</li>
           </ul>
         </div>
-        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-          <h4 className="font-semibold text-slate-800 mb-2">Fon Avantajları</h4>
-          <ul className="text-sm text-slate-700 space-y-1">
+        <div className="bg-surface-raised border border-border-default rounded-lg p-4">
+          <h4 className="font-semibold text-heading mb-2">Fon Avantajları</h4>
+          <ul className="text-sm text-body space-y-1">
             <li>Likidite - anında nakde çevrilebilir</li>
             <li>Düşük giriş maliyeti</li>
             <li>Çeşitlendirme imkanı</li>
@@ -333,7 +333,7 @@ export function RealEstateComparison() {
         </div>
       </div>
 
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted">
         * Konut fiyatları TCMB Konut Fiyat Endeksi ve TUIK verilerine dayanmaktadır. Gerçek getiriler lokasyon, konut tipi ve piyasa koşullarına göre değişebilir.
       </p>
     </div>

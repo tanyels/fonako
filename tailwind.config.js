@@ -3,6 +3,7 @@ module.exports = {
   content: [
     './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -44,6 +45,21 @@ module.exports = {
           DEFAULT: '#dc2626',
           dark: '#b91c1c',
         },
+        // Semantic surface tokens (CSS variable backed)
+        surface: {
+          DEFAULT: 'var(--surface)',
+          raised: 'var(--surface-raised)',
+          inset: 'var(--surface-inset)',
+          overlay: 'var(--surface-overlay)',
+        },
+        // Semantic text tokens
+        heading: 'var(--heading)',
+        body: 'var(--body)',
+        muted: 'var(--muted)',
+        subtle: 'var(--subtle)',
+        // Semantic border tokens
+        'border-default': 'var(--border-default)',
+        'border-strong': 'var(--border-strong)',
       },
     },
   },
