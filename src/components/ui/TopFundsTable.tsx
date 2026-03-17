@@ -36,6 +36,32 @@ const PERIODS: { key: PeriodKey; label: string; months: number }[] = [
   { key: '10Y', label: '10 yıl', months: 120 },
 ]
 
+// Fund filter options
+type FundFilterKey = 'all' | 'public' | 'qualified' | 'bes'
+  | 'cat:Hisse' | 'cat:Altın' | 'cat:Döviz' | 'cat:Tahvil'
+  | 'cat:Katılım' | 'cat:Para Piyasası' | 'cat:Değişken' | 'cat:Fon Sepeti'
+
+interface FundFilter {
+  key: FundFilterKey
+  label: string
+  group: 'type' | 'category'
+}
+
+const FUND_FILTERS: FundFilter[] = [
+  { key: 'all', label: 'Tüm Fonlar', group: 'type' },
+  { key: 'public', label: 'Halka Açık Fonlar', group: 'type' },
+  { key: 'qualified', label: 'Nitelikli Yatırımcı (Özel)', group: 'type' },
+  { key: 'bes', label: 'BES Fonları', group: 'type' },
+  { key: 'cat:Hisse', label: 'Hisse Senedi', group: 'category' },
+  { key: 'cat:Altın', label: 'Altın', group: 'category' },
+  { key: 'cat:Döviz', label: 'Döviz', group: 'category' },
+  { key: 'cat:Tahvil', label: 'Tahvil / Borçlanma', group: 'category' },
+  { key: 'cat:Katılım', label: 'Katılım', group: 'category' },
+  { key: 'cat:Para Piyasası', label: 'Para Piyasası', group: 'category' },
+  { key: 'cat:Değişken', label: 'Değişken', group: 'category' },
+  { key: 'cat:Fon Sepeti', label: 'Fon Sepeti', group: 'category' },
+]
+
 interface RawReturn {
   code: string
   tryReturn: number
@@ -65,9 +91,11 @@ export function TopFundsTable() {
   const [benchmark, setBenchmark] = useState<BenchmarkKey>('nominal')
   const [period, setPeriod] = useState<PeriodKey>('1Y')
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [besOnly, setBesOnly] = useState(false)
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [fundFilter, setFundFilter] = useState<FundFilterKey>('all')
   const [inflationRate, setInflationRate] = useState<number | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const filterRef = useRef<HTMLDivElement>(null)
 
   const currentBenchmark = BENCHMARKS.find((b) => b.key === benchmark)!
   const currentPeriod = PERIODS.find((p) => p.key === period)!
@@ -139,6 +167,9 @@ export function TopFundsTable() {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setDropdownOpen(false)
       }
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
+        setFilterOpen(false)
+      }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
@@ -175,9 +206,14 @@ export function TopFundsTable() {
     return `Yıllık %${b.fallbackRate}`
   }
 
-  const filtered = besOnly
-    ? data.filter((f) => isBESFund(f.name, f.category))
-    : data
+  const filtered = data.filter((f) => {
+    if (fundFilter === 'all') return true
+    if (fundFilter === 'bes') return isBESFund(f.name, f.category)
+    if (fundFilter === 'public') return !f.name.includes('ÖZEL FON')
+    if (fundFilter === 'qualified') return f.name.includes('ÖZEL FON')
+    if (fundFilter.startsWith('cat:')) return f.category === fundFilter.slice(4)
+    return true
+  })
 
   const sorted = [...filtered]
     .sort((a, b) => {
@@ -267,16 +303,47 @@ export function TopFundsTable() {
         ))}
       </div>
 
-      <label className="flex items-center gap-1.5 text-xs text-muted mb-4 cursor-pointer select-none">
-        <input
-          type="checkbox"
-          checked={besOnly}
-          onChange={(e) => setBesOnly(e.target.checked)}
-          className="rounded border-border-strong text-body focus:ring-slate-500 w-3.5 h-3.5"
-          aria-label="Sadece BES fonlarını göster"
-        />
-        Sadece BES fonları
-      </label>
+      {/* Fund type filter */}
+      <div className="relative inline-block mb-3" ref={filterRef}>
+        <button
+          onClick={() => setFilterOpen(!filterOpen)}
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-surface-inset hover:bg-surface-raised text-body text-xs font-medium transition border border-border-default"
+          aria-label="Fon türü filtresi"
+          aria-expanded={filterOpen}
+        >
+          {FUND_FILTERS.find((f) => f.key === fundFilter)!.label}
+          <svg className={`w-3 h-3 transition-transform ${filterOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {filterOpen && (
+          <div className="absolute left-0 top-full mt-1 bg-surface border border-border-default rounded-lg shadow-lg z-20 min-w-[200px] max-h-[320px] overflow-y-auto">
+            {/* Type filters */}
+            <div className="px-2.5 pt-2 pb-1 text-[10px] font-semibold text-subtle uppercase tracking-wide">Fon Türü</div>
+            {FUND_FILTERS.filter((f) => f.group === 'type').map((f) => (
+              <button
+                key={f.key}
+                onClick={() => { setFundFilter(f.key); setFilterOpen(false) }}
+                className={`w-full text-left px-3 py-1.5 hover:bg-surface-inset transition text-sm ${fundFilter === f.key ? 'bg-surface-raised font-semibold text-heading' : 'text-body'}`}
+              >
+                {f.label}
+              </button>
+            ))}
+            {/* Category filters */}
+            <div className="border-t border-border-default mt-1" />
+            <div className="px-2.5 pt-2 pb-1 text-[10px] font-semibold text-subtle uppercase tracking-wide">Kategori</div>
+            {FUND_FILTERS.filter((f) => f.group === 'category').map((f) => (
+              <button
+                key={f.key}
+                onClick={() => { setFundFilter(f.key); setFilterOpen(false) }}
+                className={`w-full text-left px-3 py-1.5 hover:bg-surface-inset transition text-sm last:rounded-b-lg ${fundFilter === f.key ? 'bg-surface-raised font-semibold text-heading' : 'text-body'}`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Effective rate indicator */}
       {inflationRate !== null && benchmark !== 'nominal' && (
