@@ -26,6 +26,11 @@ export function isBESFund(name: string, category?: string): boolean {
   return upper.includes('EMEKLİLİK') || upper.includes('EMEKLILIK')
 }
 
+// OKS (Otomatik Katılım / Devlet Katkısı) fonu — isimde "OKS" geçer
+export function isOKSFund(name: string): boolean {
+  return name.toUpperCase().includes(' OKS ')
+}
+
 // Halka açık TEFAS fonu — ne BES ne de nitelikli yatırımcı
 export function isPublicTEFASFund(name: string, category?: string): boolean {
   return !isBESFund(name, category) && !isQualifiedFund(name)

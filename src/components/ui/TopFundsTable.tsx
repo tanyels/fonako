@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useFundBatchLookup } from '@/lib/hooks/useFundLookup'
 import { supabase, getInflationForPeriod } from '@/lib/api/supabase'
-import { isBESFund, isQualifiedFund, isPublicTEFASFund } from '@/lib/constants'
+import { isBESFund, isQualifiedFund, isPublicTEFASFund, isOKSFund } from '@/lib/constants'
 
 type SortCol = 'try' | 'usd' | 'gold'
 type SortDir = 'desc' | 'asc'
@@ -37,7 +37,7 @@ const PERIODS: { key: PeriodKey; label: string; months: number }[] = [
 ]
 
 // Fund type toggle filters (multi-select)
-type FundTypeKey = 'public' | 'bes' | 'qualified'
+type FundTypeKey = 'public' | 'bes' | 'oks' | 'qualified'
 
 interface FundTypeFilter {
   key: FundTypeKey
@@ -47,6 +47,7 @@ interface FundTypeFilter {
 const FUND_TYPE_FILTERS: FundTypeFilter[] = [
   { key: 'public', label: 'Halka Açık TEFAS' },
   { key: 'bes', label: 'BES' },
+  { key: 'oks', label: 'OKS (Devlet Katkısı)' },
   { key: 'qualified', label: 'Nitelikli & Kapalı' },
 ]
 
@@ -232,6 +233,7 @@ export function TopFundsTable() {
       let matchesType = false
       activeTypes.forEach((t) => {
         if (t === 'bes' && isBESFund(f.name, f.category)) matchesType = true
+        if (t === 'oks' && isOKSFund(f.name)) matchesType = true
         if (t === 'public' && isPublicTEFASFund(f.name, f.category)) matchesType = true
         if (t === 'qualified' && isQualifiedFund(f.name)) matchesType = true
       })
